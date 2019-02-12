@@ -16,8 +16,23 @@
         "tls"
       ]
     }
+  },
+  {
+    "port": 53,
+    "listen": "26.26.26.2",
+    "tag": "dns-in",
+    "protocol": "dokodemo-door",
+    "settings": {
+      "address": "1.1.1.1",
+      "port": 53,
+      "network": "tcp,udp"
+    }
   }],
   "outbounds": [{
+      "protocol": "dns",
+      "tag": "dns-out"
+    },
+    {
     "tag": "proxy",
     "protocol": "vmess",
     "settings": {
@@ -69,6 +84,25 @@
   ],
   "routing": {
       "domainStrategy": "IPIfNonMatch",
-      "rules": []
+      "rules": [{
+        "type": "field",
+        "inboundTag": "dns-in",
+        "outboundTag": "dns-out"
+      }]
+  },
+  "dns": {
+      "hosts": {
+        "domain:v2ray.com": "www.vicemc.net",
+        "geosite:category-ads": "127.0.0.1"
+      },
+      "servers": [
+          "1.1.1.1",
+          {
+            "address": "114.114.114.114",
+            "port": 53,
+            "domains": ["geosite:cn"]
+          },
+          "localhost"
+      ]
   }
 }
