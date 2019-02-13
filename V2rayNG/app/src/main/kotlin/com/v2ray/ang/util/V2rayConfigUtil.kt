@@ -449,7 +449,7 @@ object V2rayConfigUtil {
 
                 val dnsInbound = V2rayConfig.InboundBean(
                     port = 5353,
-                    listen = "26.26.26.2",
+                    listen = null,
                     tag = "dns-in",
                     protocol = "dokodemo-door",
                     settings = dnsInSetting,
