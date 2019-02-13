@@ -14,11 +14,17 @@ data class V2rayConfig(
     data class InboundBean(
             var port: Int,
             var protocol: String,
-            val settings: InSettingsBean,
-            val sniffing: SniffingBean) {
+            val settings: Any,
+            val listen: String?=null,
+            val tag: String?=null,
+            val sniffing: SniffingBean?) {
 
         data class InSettingsBean(val auth: String,
                                   val udp: Boolean)
+
+        data class DokodemoInSettingsBean(val address: String,
+                                  val port: Int,
+                                  val network: String)
 
         data class SniffingBean(val enabled: Boolean,
                                 val destOverride: List<String>)
@@ -26,9 +32,9 @@ data class V2rayConfig(
 
     data class OutboundBean(val tag: String,
                             var protocol: String,
-                            var settings: OutSettingsBean,
-                            var streamSettings: StreamSettingsBean,
-                            var mux: MuxBean) {
+                            var settings: OutSettingsBean?,
+                            var streamSettings: StreamSettingsBean?,
+                            var mux: MuxBean?) {
 
         data class OutSettingsBean(var vnext: List<VnextBean>?,
                                    var servers: List<ServersBean>?,
@@ -96,7 +102,9 @@ data class V2rayConfig(
     }
 
     //data class DnsBean(var servers: List<String>)
-    data class DnsBean(var servers: List<Any>) {
+    data class DnsBean(var servers: List<Any>,
+        var hosts: Map<String, String>?
+    ) {
         data class ServersBean(var address: String = "",
                                var port: Int = 0,
                                var domains: List<String>?)
@@ -109,6 +117,8 @@ data class V2rayConfig(
                 //var port: String,
                              var ip: ArrayList<String>?,
                              var domain: ArrayList<String>?,
-                             var outboundTag: String)
+                             var outboundTag: String,
+                             var inboundTag: String?,
+                             var port: String?=null)
     }
 }
