@@ -118,6 +118,7 @@ data class V2rayConfig(
                              var ip: ArrayList<String>?,
                              var domain: ArrayList<String>?,
                              var outboundTag: String,
-                             var inboundTag: String?)
+                             var inboundTag: String?,
+                             var port: String?=null)
     }
 }
