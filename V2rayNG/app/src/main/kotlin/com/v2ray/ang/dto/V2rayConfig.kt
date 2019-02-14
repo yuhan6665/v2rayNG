@@ -15,16 +15,16 @@ data class V2rayConfig(
             var port: Int,
             var protocol: String,
             val settings: Any,
-            val listen: String?=null,
-            val tag: String?=null,
+            val listen: String? = null,
+            val tag: String? = null,
             val sniffing: SniffingBean?) {
 
         data class InSettingsBean(val auth: String,
                                   val udp: Boolean)
 
         data class DokodemoInSettingsBean(val address: String,
-                                  val port: Int,
-                                  val network: String)
+                                          val port: Int,
+                                          val network: String)
 
         data class SniffingBean(val enabled: Boolean,
                                 val destOverride: List<String>)
@@ -103,7 +103,7 @@ data class V2rayConfig(
 
     //data class DnsBean(var servers: List<String>)
     data class DnsBean(var servers: List<Any>,
-        var hosts: Map<String, String>?
+                       var hosts: Map<String, String>?
     ) {
         data class ServersBean(var address: String = "",
                                var port: Int = 0,
@@ -119,6 +119,6 @@ data class V2rayConfig(
                              var domain: ArrayList<String>?,
                              var outboundTag: String,
                              var inboundTag: String?,
-                             var port: String?=null)
+                             var port: String? = null)
     }
 }

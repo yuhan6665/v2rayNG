@@ -417,34 +417,34 @@ object V2rayConfigUtil {
             val cnserver = V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn"))
             servers.add(cnserver)
             val hosts = mapOf<String, String>(
-                "domain:v2ray.com" to "www.vicemc.net",
-                "geosite:category-ads" to "127.0.0.1"
+//                    "domain:v2ray.com" to "www.vicemc.net",
+                    "geosite:category-ads" to "127.0.0.1"
             )
 
             v2rayConfig.dns = V2rayConfig.DnsBean(
-                servers = servers,
-                hosts = hosts)
+                    servers = servers,
+                    hosts = hosts)
 
             // DNS outbound对象
-            if ( v2rayConfig.outbounds.none{ e -> e.protocol == "dns" && e.tag == "dns-out"  } ) {
+            if (v2rayConfig.outbounds.none { e -> e.protocol == "dns" && e.tag == "dns-out" }) {
                 val dnsOutbound = V2rayConfig.OutboundBean(
-                    protocol = "dns",
-                    tag = "dns-out",
-                    settings = null,
-                    streamSettings = null,
-                    mux = null)
+                        protocol = "dns",
+                        tag = "dns-out",
+                        settings = null,
+                        streamSettings = null,
+                        mux = null)
 
                 v2rayConfig.outbounds.add(dnsOutbound)
             }
 
             // DNS Reroute to v2ray inner DNS
             val rdnsRule = V2rayConfig.RoutingBean.RulesBean(
-                type = "field",
-                inboundTag = null,
-                outboundTag = "dns-out",
-                port = "53",
-                ip = arrayListOf<String>("26.26.26.2"),
-                domain = null)
+                    type = "field",
+                    inboundTag = null,
+                    outboundTag = "dns-out",
+                    port = "53",
+                    ip = arrayListOf<String>("26.26.26.2"),
+                    domain = null)
             v2rayConfig.routing.rules.add(0, rdnsRule)
 
         } catch (e: Exception) {
