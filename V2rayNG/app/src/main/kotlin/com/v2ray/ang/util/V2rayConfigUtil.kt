@@ -437,26 +437,7 @@ object V2rayConfigUtil {
                 v2rayConfig.outbounds.add(dnsOutbound)
             }
 
-            // DNS inbound对象
-            if ( v2rayConfig.inbounds.none{ e -> e.protocol == "dokodemo-door" && e.tag == "dns-in" } ) {
-                val dnsInSetting = V2rayConfig.InboundBean.DokodemoInSettingsBean(
-                    // 目的DNS服务器由dns配置决定，此处是假设的地址
-                    address = "1.1.1.1",
-                    port = 53,
-                    network = "tcp,udp")
-
-                val dnsInbound = V2rayConfig.InboundBean(
-                    port = 5353,
-                    listen = null,
-                    tag = "dns-in",
-                    protocol = "dokodemo-door",
-                    settings = dnsInSetting,
-                    sniffing = null)
-
-                v2rayConfig.inbounds.add(dnsInbound)
-            }
-            
-            // DNS Routing
+            // DNS Reroute to v2ray inner DNS
             val rdnsRule = V2rayConfig.RoutingBean.RulesBean(
                 type = "field",
                 inboundTag = null,
