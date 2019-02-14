@@ -369,7 +369,7 @@ object V2rayConfigUtil {
                         .forEach {
                             if (Utils.isIpAddress(it) || it.startsWith("geoip:")) {
                                 rulesIP.ip?.add(it)
-                            } else
+                            } else if (it.isNotBlank() || it.isNotEmpty())
 //                                if (Utils.isValidUrl(it)
 //                                    || it.startsWith("geosite:")
 //                                    || it.startsWith("regexp:")
@@ -427,15 +427,15 @@ object V2rayConfigUtil {
                     .split(",")
                     .forEach {
                         if (Utils.isIpAddress(it) || it.startsWith("geoip:")) {
-                        } else
+                        } else if (it.isNotBlank() || it.isNotEmpty())
 //                            if (Utils.isValidUrl(it)
 //                                    || it.startsWith("geosite:")
 //                                    || it.startsWith("regexp:")
 //                                    || it.startsWith("domain:")
 //                                    || it.startsWith("full:"))
-                            {
-                                proxyDomain.add(it)
-                            }
+                        {
+                            proxyDomain.add(it)
+                        }
                     }
             if (proxyDomain.size > 0) {
                 servers.add(V2rayConfig.DnsBean.ServersBean("1.1.1.1", 53, proxyDomain))
