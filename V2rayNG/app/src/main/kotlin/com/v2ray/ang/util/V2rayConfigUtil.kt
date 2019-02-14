@@ -414,10 +414,8 @@ object V2rayConfigUtil {
                 servers.add(it)
             }
 
-            val cnserver = V2rayConfig.DnsBean.ServersBean("114.114.114.114", 53, arrayListOf("geosite:cn"))
-            val localDns = V2rayConfig.DnsBean.ServersBean("26.26.26.2", 5353, null)
+            val cnserver = V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn"))
             servers.add(cnserver)
-            servers.add(localDns)
             val hosts = mapOf<String, String>(
                 "domain:v2ray.com" to "www.vicemc.net",
                 "geosite:category-ads" to "127.0.0.1"
@@ -439,45 +437,15 @@ object V2rayConfigUtil {
                 v2rayConfig.outbounds.add(dnsOutbound)
             }
 
-            // DNS inbound对象
-            if ( v2rayConfig.inbounds.none{ e -> e.protocol == "dokodemo-door" && e.tag == "dns-in" } ) {
-                val dnsInSetting = V2rayConfig.InboundBean.DokodemoInSettingsBean(
-                    // 目的DNS服务器由dns配置决定，此处是假设的地址
-                    address = "1.1.1.1",
-                    port = 53,
-                    network = "tcp,udp")
-
-                val dnsInbound = V2rayConfig.InboundBean(
-                    port = 5353,
-                    listen = null,
-                    tag = "dns-in",
-                    protocol = "dokodemo-door",
-                    settings = dnsInSetting,
-                    sniffing = null)
-
-                v2rayConfig.inbounds.add(dnsInbound)
-            }
-            
-            // DNS Routing
+            // DNS Reroute to v2ray inner DNS
             val rdnsRule = V2rayConfig.RoutingBean.RulesBean(
                 type = "field",
                 inboundTag = null,
                 outboundTag = "dns-out",
                 port = "53",
-                ip = null,
+                ip = arrayListOf<String>("26.26.26.2"),
                 domain = null)
-            v2rayConfig.routing.rules.add(rdnsRule)
-
-            if ( v2rayConfig.routing.rules.none{ e -> e.inboundTag == "dns-in" && e.inboundTag == "dns-out" }) {
-                val dnsRule = V2rayConfig.RoutingBean.RulesBean(
-                    type = "field",
-                    inboundTag = "dns-in",
-                    outboundTag = "dns-out",
-                    ip = null,
-                    domain = null)
-
-                v2rayConfig.routing.rules.add(dnsRule)
-            }
+            v2rayConfig.routing.rules.add(0, rdnsRule)
 
         } catch (e: Exception) {
             e.printStackTrace()
