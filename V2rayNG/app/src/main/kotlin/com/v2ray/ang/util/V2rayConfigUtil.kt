@@ -414,10 +414,8 @@ object V2rayConfigUtil {
                 servers.add(it)
             }
 
-            val cnserver = V2rayConfig.DnsBean.ServersBean("114.114.114.114", 53, arrayListOf("geosite:cn"))
-            val localDns = V2rayConfig.DnsBean.ServersBean("26.26.26.2", 5353, null)
+            val cnserver = V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn"))
             servers.add(cnserver)
-            servers.add(localDns)
             val hosts = mapOf<String, String>(
                 "domain:v2ray.com" to "www.vicemc.net",
                 "geosite:category-ads" to "127.0.0.1"
@@ -464,9 +462,9 @@ object V2rayConfigUtil {
                 inboundTag = null,
                 outboundTag = "dns-out",
                 port = "53",
-                ip = null,
+                ip = arrayListOf<String>("26.26.26.2"),
                 domain = null)
-            v2rayConfig.routing.rules.add(rdnsRule)
+            v2rayConfig.routing.rules.add(0, rdnsRule)
 
             if ( v2rayConfig.routing.rules.none{ e -> e.inboundTag == "dns-in" && e.inboundTag == "dns-out" }) {
                 val dnsRule = V2rayConfig.RoutingBean.RulesBean(
