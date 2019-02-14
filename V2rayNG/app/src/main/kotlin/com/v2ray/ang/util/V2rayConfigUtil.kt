@@ -326,7 +326,7 @@ object V2rayConfigUtil {
             if (!TextUtils.isEmpty(code)) {
                 //IP
                 if (ipOrDomain == "ip" || ipOrDomain == "") {
-                    val rulesIP = V2rayConfig.RoutingBean.RulesBean("", null, null, "", null)
+                    val rulesIP = V2rayConfig.RoutingBean.RulesBean()
                     rulesIP.type = "field"
                     rulesIP.outboundTag = tag
                     rulesIP.ip = ArrayList<String>()
@@ -336,7 +336,7 @@ object V2rayConfigUtil {
 
                 if (ipOrDomain == "domain" || ipOrDomain == "") {
                     //Domain
-                    val rulesDomain = V2rayConfig.RoutingBean.RulesBean("", null, null, "", null)
+                    val rulesDomain = V2rayConfig.RoutingBean.RulesBean()
                     rulesDomain.type = "field"
                     rulesDomain.outboundTag = tag
                     rulesDomain.domain = ArrayList<String>()
@@ -353,13 +353,13 @@ object V2rayConfigUtil {
         try {
             if (!TextUtils.isEmpty(userRule)) {
                 //Domain
-                val rulesDomain = V2rayConfig.RoutingBean.RulesBean("", null, null, "", "")
+                val rulesDomain = V2rayConfig.RoutingBean.RulesBean()
                 rulesDomain.type = "field"
                 rulesDomain.outboundTag = tag
                 rulesDomain.domain = ArrayList<String>()
 
                 //IP
-                val rulesIP = V2rayConfig.RoutingBean.RulesBean("", null, null, "", "")
+                val rulesIP = V2rayConfig.RoutingBean.RulesBean()
                 rulesIP.type = "field"
                 rulesIP.outboundTag = tag
                 rulesIP.ip = ArrayList<String>()
@@ -463,7 +463,6 @@ object V2rayConfigUtil {
             // DNS Reroute to v2ray inner DNS
             val rdnsRule = V2rayConfig.RoutingBean.RulesBean(
                     type = "field",
-                    inboundTag = null,
                     outboundTag = "dns-out",
                     port = "53",
                     ip = arrayListOf<String>("26.26.26.2"),
