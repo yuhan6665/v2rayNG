@@ -293,6 +293,7 @@ object V2rayConfigUtil {
      */
     private fun routing(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
         try {
+            routingUserRule("google", AppConfig.TAG_AGENT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""), AppConfig.TAG_AGENT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""), AppConfig.TAG_DIRECT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""), AppConfig.TAG_BLOCKED, v2rayConfig)
@@ -368,11 +369,13 @@ object V2rayConfigUtil {
                         .forEach {
                             if (Utils.isIpAddress(it) || it.startsWith("geoip:")) {
                                 rulesIP.ip?.add(it)
-                            } else if (Utils.isValidUrl(it)
-                                    || it.startsWith("geosite:")
-                                    || it.startsWith("regexp:")
-                                    || it.startsWith("domain:")
-                                    || it.startsWith("full:")) {
+                            } else
+//                                if (Utils.isValidUrl(it)
+//                                    || it.startsWith("geosite:")
+//                                    || it.startsWith("regexp:")
+//                                    || it.startsWith("domain:")
+//                                    || it.startsWith("full:"))
+                            {
                                 rulesDomain.domain?.add(it)
                             }
                         }
@@ -406,20 +409,40 @@ object V2rayConfigUtil {
 //                //servers.add(server)
 //            }
 
+            val hosts = mapOf(
+//                    "domain:v2ray.com" to "www.vicemc.net",
+                    "geosite:category-ads" to "127.0.0.1"
+            )
 
-            // DNS配置对象，分流规则
+            //customer
             val servers = ArrayList<Any>()
             val dns = Utils.getRemoteDnsServers(app.defaultDPreference)
             dns.forEach {
                 servers.add(it)
             }
 
-            val cnserver = V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn"))
-            servers.add(cnserver)
-            val hosts = mapOf<String, String>(
-//                    "domain:v2ray.com" to "www.vicemc.net",
-                    "geosite:category-ads" to "127.0.0.1"
-            )
+            val proxyDomain = arrayListOf("google")
+            app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, "")
+                    .trim().replace("\n", "")
+                    .split(",")
+                    .forEach {
+                        if (Utils.isIpAddress(it) || it.startsWith("geoip:")) {
+                        } else
+//                            if (Utils.isValidUrl(it)
+//                                    || it.startsWith("geosite:")
+//                                    || it.startsWith("regexp:")
+//                                    || it.startsWith("domain:")
+//                                    || it.startsWith("full:"))
+                            {
+                                proxyDomain.add(it)
+                            }
+                    }
+            if (proxyDomain.size > 0) {
+                servers.add(V2rayConfig.DnsBean.ServersBean("1.1.1.1", 53, proxyDomain))
+            }
+
+            val directDomain = arrayListOf("geosite:cn")
+            servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, directDomain))
 
             v2rayConfig.dns = V2rayConfig.DnsBean(
                     servers = servers,
