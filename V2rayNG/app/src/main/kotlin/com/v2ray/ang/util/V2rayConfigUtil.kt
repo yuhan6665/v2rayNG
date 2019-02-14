@@ -447,17 +447,6 @@ object V2rayConfigUtil {
                 domain = null)
             v2rayConfig.routing.rules.add(0, rdnsRule)
 
-            if ( v2rayConfig.routing.rules.none{ e -> e.inboundTag == "dns-in" && e.inboundTag == "dns-out" }) {
-                val dnsRule = V2rayConfig.RoutingBean.RulesBean(
-                    type = "field",
-                    inboundTag = "dns-in",
-                    outboundTag = "dns-out",
-                    ip = null,
-                    domain = null)
-
-                v2rayConfig.routing.rules.add(dnsRule)
-            }
-
         } catch (e: Exception) {
             e.printStackTrace()
             return false
