@@ -156,7 +156,7 @@ object V2rayConfigUtil {
                     user?.id = vmess.id
                     user?.alterId = vmess.alterId
                     user?.security = vmess.security
-                    user?.level = 2018
+                    user?.level = 8
 
                     //Mux
                     val muxEnabled = false//app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_MUX_ENABLED, false)
@@ -176,7 +176,7 @@ object V2rayConfigUtil {
                     server?.ota = false
                     server?.password = vmess.id
                     server?.port = vmess.port
-                    server?.level = 2018
+                    server?.level = 8
 
                     //Mux
                     outbound.mux?.enabled = false

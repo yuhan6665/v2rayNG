@@ -4,7 +4,7 @@
   },
   "policy":{
       "levels": {
-        "2018": {
+        "8": {
           "handshake": 4,
           "connIdle": 60,
           "uplinkOnly": 2,
@@ -18,7 +18,7 @@
     "settings": {
       "auth": "noauth",
       "udp": true,
-      "userLevel": 2018
+      "userLevel": 8
     },
     "sniffing": {
       "enabled": true,
@@ -41,7 +41,7 @@
               "id": "a3482e88-686a-4a58-8126-99c9df64b7bf",
               "alterId": 64,
               "security": "auto",
-              "level": 2018
+              "level": 8
             }
           ]
         }
@@ -53,7 +53,7 @@
         "ota": false,
         "password": "123456",
         "port": 10086,
-        "level": 2018
+        "level": 8
       }
       ]
     },
