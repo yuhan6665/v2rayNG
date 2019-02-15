@@ -2,6 +2,16 @@
   "log": {
     "loglevel": "warning"
   },
+  "policy":{
+      "levels": {
+        "2018": {
+          "handshake": 4,
+          "connIdle": 10,
+          "uplinkOnly": 2,
+          "downlinkOnly": 5
+        }
+      }
+  },
   "inbounds": [{
     "port": 10808,
     "protocol": "socks",
@@ -29,7 +39,8 @@
             {
               "id": "a3482e88-686a-4a58-8126-99c9df64b7bf",
               "alterId": 64,
-              "security": "auto"
+              "security": "auto",
+              "level": 2018
             }
           ]
         }
@@ -41,7 +52,7 @@
         "ota": false,
         "password": "123456",
         "port": 10086,
-        "level": 1
+        "level": 2018
       }
       ]
     },

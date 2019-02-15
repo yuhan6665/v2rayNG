@@ -40,7 +40,8 @@ data class V2rayConfig(
 
                 data class UsersBean(var id: String,
                                      var alterId: Int,
-                                     var security: String)
+                                     var security: String,
+                                     var level: Int)
             }
 
             data class ServersBean(var address: String,
