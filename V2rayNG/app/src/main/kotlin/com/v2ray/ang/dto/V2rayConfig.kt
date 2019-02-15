@@ -2,6 +2,7 @@ package com.v2ray.ang.dto
 
 data class V2rayConfig(
         val log: LogBean,
+        val policy: PolicyBean,
         val inbounds: ArrayList<InboundBean>,
         var outbounds: ArrayList<OutboundBean>,
         var dns: DnsBean,
@@ -113,5 +114,13 @@ data class V2rayConfig(
                              var domain: ArrayList<String>? = null,
                              var outboundTag: String = "",
                              var port: String? = null)
+    }
+
+    data class PolicyBean(var levels: Map<String, LevelBean>) {
+        data class LevelBean(
+                  var handshake: Int? = null,
+                  var connIdle: Int? = null,
+                  var uplinkOnly: Int? = null,
+                  var downlinkOnly: Int? = null)
     }
 }
