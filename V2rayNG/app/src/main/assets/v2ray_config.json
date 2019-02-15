@@ -6,7 +6,7 @@
       "levels": {
         "2018": {
           "handshake": 4,
-          "connIdle": 10,
+          "connIdle": 60,
           "uplinkOnly": 2,
           "downlinkOnly": 5
         }
