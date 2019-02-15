@@ -412,6 +412,7 @@ object V2rayConfigUtil {
 
             val hosts = mapOf(
 //                    "domain:v2ray.com" to "www.vicemc.net",
+                    "domain:googleapis.cn" to "googleapis.com",
                     "geosite:category-ads" to "127.0.0.1"
             )
 
@@ -466,8 +467,7 @@ object V2rayConfigUtil {
                     type = "field",
                     outboundTag = "dns-out",
                     port = "53",
-                    ip = null,
-                    //ip = arrayListOf<String>("26.26.26.2"),
+                    ip = arrayListOf<String>("26.26.26.2"),
                     domain = null)
             v2rayConfig.routing.rules.add(0, rdnsRule)
 
