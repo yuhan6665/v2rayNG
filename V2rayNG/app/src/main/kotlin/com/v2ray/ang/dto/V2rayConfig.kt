@@ -14,17 +14,11 @@ data class V2rayConfig(
     data class InboundBean(
             var port: Int,
             var protocol: String,
-            val settings: Any,
-            val listen: String? = null,
-            val tag: String? = null,
-            val sniffing: SniffingBean?) {
+            val settings: InSettingsBean,
+            val sniffing: SniffingBean) {
 
         data class InSettingsBean(val auth: String,
                                   val udp: Boolean)
-
-        data class DokodemoInSettingsBean(val address: String,
-                                          val port: Int,
-                                          val network: String)
 
         data class SniffingBean(val enabled: Boolean,
                                 val destOverride: List<String>)

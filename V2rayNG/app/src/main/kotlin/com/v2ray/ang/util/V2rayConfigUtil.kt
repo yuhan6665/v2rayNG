@@ -465,7 +465,8 @@ object V2rayConfigUtil {
                     type = "field",
                     outboundTag = "dns-out",
                     port = "53",
-                    ip = arrayListOf<String>("26.26.26.2"),
+                    ip = null,
+                    //ip = arrayListOf<String>("26.26.26.2"),
                     domain = null)
             v2rayConfig.routing.rules.add(0, rdnsRule)
 
