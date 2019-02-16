@@ -14,8 +14,9 @@
 
 ### 日志信息
 <details>
+通过 `adb logcat -s com.v2ray.ang GoLog V2rayConfigUtilGoLog Main` 获取日志。请自行删减日志中可能出现的敏感信息。
 
-通过 `adb logcat com.v2ray.ang` 获取日志。请自行删减日志中可能出现的敏感信息。
+如果问题可重现，建议先执行`adb logcat -c`清空系统日志再执行上述命令，再操作重现问题。
 ```
 在这里粘贴日志
 ```
