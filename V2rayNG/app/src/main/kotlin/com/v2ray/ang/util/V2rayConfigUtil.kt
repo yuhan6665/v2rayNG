@@ -392,59 +392,51 @@ object V2rayConfigUtil {
         }
     }
 
+    private fun userRule2Domian(userRule: String) : ArrayList<String> {
+        val domain = ArrayList<String>()
+        userRule.trim().replace("\n", "").split(",").forEach {
+            if ((it.startsWith("geosite:") || it.startsWith("domain:")) &&
+                 it.isNotBlank() && it.isNotEmpty()) {
+                domain.add(it)
+            }
+        }
+        return domain
+    }
+
     /**
      * Custom Dns
      */
     private fun customDns(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
         try {
-//            val localDns = app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
-//            if (localDns) {
-//                val serverLoc = V2rayConfig.DnsBean.ServersBean("127.0.0.1", 8053, null)
-//                servers.add(serverLoc)
-//            } else {
-//                val dns = Utils.getRemoteDnsServers(app.defaultDPreference)
-//                dns.forEach {
-//                    servers.add(it)
-//                }
-//                //val server = V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn"))
-//                //servers.add(server)
-//            }
-
-            val hosts = mapOf(
-//                    "domain:v2ray.com" to "www.vicemc.net",
-                    "domain:googleapis.cn" to "googleapis.com",
-                    "geosite:category-ads" to "127.0.0.1"
-            )
-
-            //customer
+            val hosts = mutableMapOf<String, String>()
             val servers = ArrayList<Any>()
             val dns = Utils.getRemoteDnsServers(app.defaultDPreference)
             dns.forEach {
                 servers.add(it)
             }
 
-            val proxyDomain = arrayListOf("google")
-            app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, "")
-                    .trim().replace("\n", "")
-                    .split(",")
-                    .forEach {
-                        if (Utils.isIpAddress(it) || it.startsWith("geoip:")) {
-                        } else if (it.isNotBlank() || it.isNotEmpty())
-//                            if (Utils.isValidUrl(it)
-//                                    || it.startsWith("geosite:")
-//                                    || it.startsWith("regexp:")
-//                                    || it.startsWith("domain:")
-//                                    || it.startsWith("full:"))
-                        {
-                            proxyDomain.add(it)
-                        }
-                    }
-            if (proxyDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean("1.1.1.1", 53, proxyDomain))
+            val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
+            if (agDomain.size > 0) {
+                servers.add(V2rayConfig.DnsBean.ServersBean("1.1.1.1", 53, agDomain))
             }
 
-            val directDomain = arrayListOf("geosite:cn")
-            servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, directDomain))
+            val dirDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""))
+            if (dirDomain.size > 0) {
+                servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, dirDomain))
+            }
+
+            val routingMode = app.defaultDPreference.getPrefString(SettingsActivity.PREF_ROUTING_MODE, "0")
+            if (routingMode == "2" || routingMode == "3") {
+                servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn")))
+            }
+
+            val blkDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""))
+            if (blkDomain.size > 0) {
+                hosts.putAll(blkDomain.map{ it to "127.0.0.1" })
+            }
+
+            // hardcode googleapi rule to fix play store problems
+            hosts.put("domain:googleapis.cn", "googleapis.com")
 
             v2rayConfig.dns = V2rayConfig.DnsBean(
                     servers = servers,
