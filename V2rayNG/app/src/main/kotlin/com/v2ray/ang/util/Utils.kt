@@ -36,6 +36,7 @@ import java.io.InputStreamReader
 import java.net.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import java.math.BigInteger
 
 
 object Utils {
@@ -173,13 +174,108 @@ object Utils {
         }
     }
 
+
+    /*
+    * Parse IP address from string.
+    *  -> https://rosettacode.org/wiki/Parse_an_IP_Address#Kotlin
+    */
+    enum class AddressSpace { IPv4, IPv6, Invalid }
+
+    data class IPAddressComponents(
+        val address: BigInteger,
+        val addressSpace: AddressSpace,
+        val port: Int  // -1 denotes 'not specified'
+    )
+
+    val INVALID = IPAddressComponents(BigInteger.ZERO, AddressSpace.Invalid, 0)
+
+    fun ipAddressParse(ipAddress: String): IPAddressComponents {
+        var addressSpace = AddressSpace.IPv4
+        var ipa = ipAddress.toLowerCase()
+        var port = -1
+        var trans = false
+
+        if (ipa.startsWith("::ffff:") && '.' in ipa) {
+            addressSpace = AddressSpace.IPv6
+            trans = true
+            ipa = ipa.drop(7)
+        }
+        else if (ipa.startsWith("[::ffff:") && '.' in ipa) {
+            addressSpace = AddressSpace.IPv6
+            trans = true
+            ipa = ipa.drop(8).replace("]", "")
+        }
+        val octets = ipa.split('.').reversed().toTypedArray()
+        var address = BigInteger.ZERO
+        if (octets.size == 4) {
+            val split = octets[0].split(':')
+            if (split.size == 2) {
+                val temp = split[1].toIntOrNull()
+                if (temp == null || temp !in 0..65535) return INVALID
+                port = temp
+                octets[0] = split[0]
+            }
+
+            for (i in 0..3) {
+                val num = octets[i].toLongOrNull()
+                if (num == null || num !in 0..255) return INVALID
+                val bigNum = BigInteger.valueOf(num)
+                address = address.or(bigNum.shiftLeft(i * 8))
+            }
+
+            if (trans) address += BigInteger("ffff00000000", 16)
+        }
+        else if (octets.size == 1) {
+            addressSpace = AddressSpace.IPv6
+            if (ipa[0] == '[') {
+                ipa = ipa.drop(1)
+                val split = ipa.split("]:")
+                if (split.size != 2) return INVALID
+                val temp = split[1].toIntOrNull()
+                if (temp == null || temp !in 0..65535) return INVALID
+                port = temp
+                ipa = ipa.dropLast(2 + split[1].length)
+            }
+            val hextets = ipa.split(':').reversed().toMutableList()
+            val len = hextets.size
+
+            if (ipa.startsWith("::"))
+                hextets[len - 1] = "0"
+            else if (ipa.endsWith("::"))
+                hextets[0] = "0"
+
+            if (ipa == "::") hextets[1] = "0"
+            if (len > 8 || (len == 8 && hextets.any { it == "" }) || hextets.count { it == "" } > 1)
+                return INVALID
+            if (len < 8) {
+                var insertions = 8 - len
+                for (i in 0..7) {
+                    if (hextets[i] == "") {
+                        hextets[i] = "0"
+                        while (insertions-- > 0) hextets.add(i, "0")
+                        break
+                    }
+                }
+            }
+            for (j in 0..7) {
+                val num = hextets[j].toLongOrNull(16)
+                if (num == null || num !in 0x0..0xFFFF) return INVALID
+                val bigNum = BigInteger.valueOf(num)
+                address = address.or(bigNum.shiftLeft(j * 16))
+            }
+        }
+        else return INVALID
+
+        return IPAddressComponents(address, addressSpace, port)
+    }
+
     /**
      * is ip address
      */
     fun isIpAddress(value: String): Boolean {
         try {
             var addr = value
-            if (addr.length < 7 || "".equals(addr)) {
+            if (addr.isEmpty() || addr.isBlank()) {
                 return false
             }
             //CIDR
@@ -189,33 +285,8 @@ object Utils {
                     addr = arr[0]
                 }
             }
-
-            var start = 0
-            var end = addr.indexOf('.')
-            var numBlocks = 0
-
-            while (start < addr.length) {
-                if (end == -1) {
-                    end = addr.length
-                }
-                try {
-                    val block = Integer.parseInt(addr.substring(start, end))
-                    if (block > 255 || block < 0) {
-                        return false
-                    }
-                } catch (e: NumberFormatException) {
-                    return false
-                }
-                numBlocks++
-                start = end + 1
-                end = addr.indexOf('.', start)
-            }
-            return numBlocks == 4
-//            val rexp = """([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}"""
-//            val pat = Pattern.compile(rexp)
-//            val mat = pat.matcher(addr)
-//            return mat.find()
-        } catch (e: WriterException) {
+            return (ipAddressParse(addr) != INVALID)
+        } catch (e: Exception) {
             e.printStackTrace()
             return false
         }
