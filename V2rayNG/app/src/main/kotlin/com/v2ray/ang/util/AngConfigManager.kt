@@ -19,7 +19,8 @@ import com.v2ray.ang.extension.defaultDPreference
 import org.jetbrains.anko.toast
 import java.net.URLDecoder
 import java.util.*
-
+import java.net.*
+import java.math.BigInteger
 
 object AngConfigManager {
     private lateinit var app: AngApplication
@@ -295,18 +296,23 @@ object AngConfigManager {
                     result = Utils.decode(result)
                 }
 
+                //  method:password@ipaddr:port
                 val arr1 = result.split('@')
                 if (arr1.count() != 2) {
                     return R.string.toast_incorrect_protocol
                 }
                 val arr21 = arr1[0].split(':')
-                val arr22 = arr1[1].split(':')
-                if (arr21.count() != 2 || arr21.count() != 2) {
+                if (arr21.count() != 2) {
                     return R.string.toast_incorrect_protocol
                 }
 
-                vmess.address = arr22[0]
-                vmess.port = Utils.parseInt(arr22[1])
+                val host = Utils.ipAddressParse(arr1[1])
+                if ( host == Utils.INVALID || host.port == -1) {
+                    return R.string.toast_incorrect_protocol
+                }
+
+                vmess.address = InetAddress.getByAddress(host.address.toByteArray()).getHostAddress()
+                vmess.port = host.port
                 vmess.security = arr21[0]
                 vmess.id = arr21[1]
                 vmess.subid = subid
