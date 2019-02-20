@@ -255,7 +255,7 @@ object AngConfigManager {
                     }
 
                     vmess.configType = AppConfig.EConfigType.Vmess
-                    vmess.security = "chacha20-poly1305"
+                    vmess.security = "auto"
                     vmess.network = "tcp"
                     vmess.headerType = "none"
 
