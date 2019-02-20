@@ -296,25 +296,17 @@ object AngConfigManager {
                     result = Utils.decode(result)
                 }
 
-                //  method:password@ipaddr:port
-                val arr1 = result.split('@')
-                if (arr1.count() != 2) {
+                val legacyPattern = "^(.+?):(.*)@(.+?):(\\d+?)$".toRegex()
+                val match = legacyPattern.matchEntire(result)
+                if (match == null) {
                     return R.string.toast_incorrect_protocol
                 }
-                val arr21 = arr1[0].split(':')
-                if (arr21.count() != 2) {
-                    return R.string.toast_incorrect_protocol
-                }
-
-                val host = Utils.ipAddressParse(arr1[1])
-                if ( host == Utils.INVALID || host.port == -1) {
-                    return R.string.toast_incorrect_protocol
-                }
-
-                vmess.address = InetAddress.getByAddress(host.address.toByteArray()).getHostAddress()
-                vmess.port = host.port
-                vmess.security = arr21[0]
-                vmess.id = arr21[1]
+                vmess.security = match.groupValues[1].toLowerCase()
+                vmess.id = match.groupValues[2]
+                vmess.address = match.groupValues[3]
+                if (vmess.address.firstOrNull() == '[' &&  vmess.address.lastOrNull() == ']')
+                    vmess.address = vmess.address.substring(1, vmess.address.length - 1)
+                vmess.port = match.groupValues[4].toInt()
                 vmess.subid = subid
 
                 addShadowsocksServer(vmess, -1)
