@@ -294,7 +294,6 @@ object V2rayConfigUtil {
      */
     private fun routing(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
         try {
-            routingUserRule("google", AppConfig.TAG_AGENT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""), AppConfig.TAG_AGENT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""), AppConfig.TAG_DIRECT, v2rayConfig)
             routingUserRule(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""), AppConfig.TAG_BLOCKED, v2rayConfig)
@@ -417,17 +416,17 @@ object V2rayConfigUtil {
 
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean("1.1.1.1", 53, agDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_AGENT, 53, agDomain))
             }
 
             val dirDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""))
             if (dirDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, dirDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_DIRECT, 53, dirDomain))
             }
 
             val routingMode = app.defaultDPreference.getPrefString(SettingsActivity.PREF_ROUTING_MODE, "0")
             if (routingMode == "2" || routingMode == "3") {
-                servers.add(V2rayConfig.DnsBean.ServersBean("223.5.5.5", 53, arrayListOf("geosite:cn")))
+                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_DIRECT, 53, arrayListOf("geosite:cn")))
             }
 
             val blkDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""))
@@ -461,6 +460,15 @@ object V2rayConfigUtil {
                     port = "53",
                     ip = arrayListOf<String>("26.26.26.2"),
                     domain = null)
+
+            val ldnsRule = V2rayConfig.RoutingBean.RulesBean(
+                    type = "field",
+                    outboundTag = AppConfig.TAG_DIRECT,
+                    port = "53",
+                    ip = arrayListOf<String>(AppConfig.DNS_DIRECT),
+                    domain = null)
+
+            v2rayConfig.routing.rules.add(0, ldnsRule)
             v2rayConfig.routing.rules.add(0, rdnsRule)
 
         } catch (e: Exception) {
