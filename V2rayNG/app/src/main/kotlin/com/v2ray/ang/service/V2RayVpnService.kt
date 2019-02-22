@@ -313,6 +313,8 @@ class V2RayVpnService : VpnService() {
                     }
                 }
                 netDev.close()
+                val stats = v2rayPoint.queryStats()
+                Log.d("v2raystats", stats.toString())
                 return bandWidth
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -10,9 +10,14 @@
           "uplinkOnly": 2,
           "downlinkOnly": 5
         }
+      },
+      "system": {
+        "statsInboundUplink": true,
+        "statsInboundDownlink": true
       }
   },
   "inbounds": [{
+    "tag": "socks",
     "port": 10808,
     "protocol": "socks",
     "settings": {

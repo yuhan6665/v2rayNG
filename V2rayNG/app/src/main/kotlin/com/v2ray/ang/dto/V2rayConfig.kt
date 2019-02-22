@@ -13,6 +13,7 @@ data class V2rayConfig(
                        val loglevel: String)
 
     data class InboundBean(
+            var tag: String,
             var port: Int,
             var protocol: String,
             val settings: InSettingsBean,
@@ -117,11 +118,15 @@ data class V2rayConfig(
                              var port: String? = null)
     }
 
-    data class PolicyBean(var levels: Map<String, LevelBean>) {
+    data class PolicyBean(var levels: Map<String, LevelBean>,
+                            var system: SystemBean) {
         data class LevelBean(
                   var handshake: Int? = null,
                   var connIdle: Int? = null,
                   var uplinkOnly: Int? = null,
                   var downlinkOnly: Int? = null)
+        data class SystemBean(
+                  var statsInboundUplink: Boolean? = false,
+                  var statsInboundDownlink: Boolean? = false)
     }
 }
