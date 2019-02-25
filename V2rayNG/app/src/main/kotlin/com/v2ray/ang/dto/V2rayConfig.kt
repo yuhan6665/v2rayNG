@@ -1,6 +1,7 @@
 package com.v2ray.ang.dto
 
 data class V2rayConfig(
+        val stats: Any?=null,
         val log: LogBean,
         val policy: PolicyBean,
         val inbounds: ArrayList<InboundBean>,
@@ -119,14 +120,11 @@ data class V2rayConfig(
     }
 
     data class PolicyBean(var levels: Map<String, LevelBean>,
-                            var system: SystemBean) {
+                            var system: Any?=null) {
         data class LevelBean(
                   var handshake: Int? = null,
                   var connIdle: Int? = null,
                   var uplinkOnly: Int? = null,
                   var downlinkOnly: Int? = null)
-        data class SystemBean(
-                  var statsInboundUplink: Boolean? = false,
-                  var statsInboundDownlink: Boolean? = false)
     }
 }
