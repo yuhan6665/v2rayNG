@@ -298,21 +298,25 @@ class V2RayVpnService : VpnService() {
     private val vpnBandwidth: VpnBandwidth?
         get() {
             try {
-                val netDev = FileInputStream("/proc/net/dev").bufferedReader()
-                var bandWidth: VpnBandwidth? = null
-                val prefix = "tun0:"
-                while (true) {
-                    val line = netDev.readLine().trim()
-                    if (line.startsWith(prefix)) {
-                        val numbers = line.substring(prefix.length).split(' ')
-                                .filter(String::isNotEmpty)
-                                .map(String::toLong)
-                        if (numbers.size > 10)
-                            bandWidth = VpnBandwidth(numbers[0], numbers[8])
-                        break
-                    }
-                }
-                netDev.close()
+                // val netDev = FileInputStream("/proc/net/dev").bufferedReader()
+                // var bandWidth: VpnBandwidth? = null
+                // val prefix = "tun0:"
+                // while (true) {
+                //     val line = netDev.readLine().trim()
+                //     if (line.startsWith(prefix)) {
+                //         val numbers = line.substring(prefix.length).split(' ')
+                //                 .filter(String::isNotEmpty)
+                //                 .map(String::toLong)
+                //         if (numbers.size > 10)
+                //             bandWidth = VpnBandwidth(numbers[0], numbers[8])
+                //         break
+                //     }
+                // }
+                // netDev.close()
+
+                var uplink = v2rayPoint.queryStats("socks", "uplink")
+                var downlink = v2rayPoint.queryStats("socks", "downlink")
+                var bandWidth = VpnBandwidth(downlink, uplink)
                 return bandWidth
             } catch (e: Exception) {
                 e.printStackTrace()
