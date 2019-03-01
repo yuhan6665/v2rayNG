@@ -78,19 +78,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
         layout_test.setOnClickListener {
-                        if (isRunning) {
-                            val socksPort = 10808//Utils.parseInt(defaultDPreference.getPrefString(SettingsActivity.PREF_SOCKS_PORT, "10808"))
+            if (isRunning) {
+                val socksPort = 10808//Utils.parseInt(defaultDPreference.getPrefString(SettingsActivity.PREF_SOCKS_PORT, "10808"))
 
-                            tv_test_state.text = getString(R.string.connection_test_testing)
-                            doAsync {
-                                val result = Utils.testConnection(this@MainActivity, socksPort)
-                                uiThread {
-                                    tv_test_state.text = Utils.getEditable(result)
-                                }
-                            }
-                        } else {
+                tv_test_state.text = getString(R.string.connection_test_testing)
+                doAsync {
+                    val result = Utils.testConnection(this@MainActivity, socksPort)
+                    uiThread {
+                        tv_test_state.text = Utils.getEditable(result)
+                    }
+                }
+            } else {
 //                tv_test_state.text = getString(R.string.connection_test_fail)
-                        }
+            }
         }
 
         recycler_view.setHasFixedSize(true)
@@ -524,7 +524,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivity<SettingsActivity>("isRunning" to isRunning)
             }
             R.id.feedback -> {
-                Utils.openUri(this, "https://github.com/2dust/v2rayNG/issues")
+                Utils.openUri(this, AppConfig.v2rayNGIssues)
+            }
+            R.id.promotion -> {
+                Utils.openUri(this, AppConfig.promotionUrl)
             }
             R.id.donate -> {
                 startActivity<InappBuyActivity>()

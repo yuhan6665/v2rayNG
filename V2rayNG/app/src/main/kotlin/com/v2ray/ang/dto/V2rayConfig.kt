@@ -24,7 +24,7 @@ data class V2rayConfig(
                                   val udp: Boolean,
                                   val userLevel: Int)
 
-        data class SniffingBean(val enabled: Boolean,
+        data class SniffingBean(var enabled: Boolean,
                                 val destOverride: List<String>)
     }
 

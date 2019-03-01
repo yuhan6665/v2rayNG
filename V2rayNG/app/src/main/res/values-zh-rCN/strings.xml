@@ -84,8 +84,10 @@
     <string name="title_pref_speed_enabled">启用速度显示</string>
     <string name="summary_pref_speed_enabled">在通知中显示当前速度</string>
 
+    <string name="title_pref_sniffing_enabled">启用流量探测</string>
+    <string name="summary_pref_sniffing_enabled">流量探测</string>
+
     <string name="title_pref_local_dns_enabled">启用本地DNS</string>
-    <string name="summary_pref_local_dns_enabled">overture(DNS端口:8053)</string>
 
     <string name="title_pref_routing_domain_strategy">域名策略</string>
     <string name="title_pref_routing">路由模式</string>
@@ -111,6 +113,8 @@
     <string name="summary_pref_feedback">反馈改进或漏洞至 GitHub</string>
     <string name="summary_pref_tg_group">加入Telegram Group</string>
     <string name="toast_tg_app_not_found">未找到Telegram app</string>
+
+    <string name="title_pref_promotion">赞助推广</string>
 
     <string name="title_pref_version">版本</string>
 

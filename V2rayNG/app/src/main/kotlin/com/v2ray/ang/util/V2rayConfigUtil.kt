@@ -7,6 +7,7 @@ import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.dto.AngConfig.VmessBean
 import com.v2ray.ang.dto.V2rayConfig
+import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.ui.SettingsActivity
 import org.json.JSONArray
 import org.json.JSONException
@@ -131,6 +132,8 @@ object V2rayConfigUtil {
 //                httpCopy.protocol = "http"
 //                v2rayConfig.inbounds.add(httpCopy)
 //            }
+            v2rayConfig.inbounds[0].sniffing.enabled = app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SNIFFING_ENABLED, true)
+
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -391,11 +394,11 @@ object V2rayConfigUtil {
         }
     }
 
-    private fun userRule2Domian(userRule: String) : ArrayList<String> {
+    private fun userRule2Domian(userRule: String): ArrayList<String> {
         val domain = ArrayList<String>()
         userRule.trim().replace("\n", "").split(",").forEach {
             if ((it.startsWith("geosite:") || it.startsWith("domain:")) &&
-                 it.isNotBlank() && it.isNotEmpty()) {
+                    it.isNotBlank() && it.isNotEmpty()) {
                 domain.add(it)
             }
         }
@@ -431,7 +434,7 @@ object V2rayConfigUtil {
 
             val blkDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""))
             if (blkDomain.size > 0) {
-                hosts.putAll(blkDomain.map{ it to "127.0.0.1" })
+                hosts.putAll(blkDomain.map { it to "127.0.0.1" })
             }
 
             // hardcode googleapi rule to fix play store problems

@@ -27,6 +27,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_PER_APP_PROXY = "pref_per_app_proxy"
 //        const val PREF_MUX_ENAimport libv2ray.Libv2rayBLED = "pref_mux_enabled"
         const val PREF_SPEED_ENABLED = "pref_speed_enabled"
+        const val PREF_SNIFFING_ENABLED = "pref_sniffing_enabled"
 //        const val PREF_LOCAL_DNS_ENABLED = "pref_local_dns_enabled"
         const val PREF_REMOTE_DNS = "pref_remote_dns"
 

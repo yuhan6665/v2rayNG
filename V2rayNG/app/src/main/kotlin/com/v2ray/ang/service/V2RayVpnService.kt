@@ -159,14 +159,6 @@ class V2RayVpnService : VpnService() {
         }
 
         v2rayPoint.vpnSupportReady()
-//        val localDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
-//        if (localDns) {
-//            var assets = Utils.readTextFromAssets(v2RayApplication, "overture_config.json")
-//            if (!TextUtils.isEmpty(assets)) {
-//                assets = assets.replace("{datadir}", v2rayPoint.packageName)
-//                v2rayPoint.loadLocalDns(assets)
-//            }
-//        }
         if (v2rayPoint.isRunning) {
             MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_SUCCESS, "")
             showNotification()

@@ -85,8 +85,10 @@
     <string name="title_pref_speed_enabled">Enable speed display</string>
     <string name="summary_pref_speed_enabled">Display current speed in the notification</string>
 
+    <string name="title_pref_sniffing_enabled">Enable Sniffing</string>
+    <string name="summary_pref_sniffing_enabled">Sniffing</string>
+
     <string name="title_pref_local_dns_enabled">Enable local DNS</string>
-    <string name="summary_pref_local_dns_enabled">overture(DNS port:8053)</string>
 
     <string name="title_pref_routing_domain_strategy">Domain strategy</string>
     <string name="title_pref_routing">Routing mode</string>
@@ -113,6 +115,8 @@
     <string name="summary_pref_tg_group">Join Telegram Group</string>
     <string name="toast_tg_app_not_found">Telegram app not found</string>
 
+    <string name="title_pref_promotion">Promotion</string>
+
     <string name="title_pref_version">Version</string>
 
     <string name="donate_error_setup">Error Setup:</string>
@@ -126,7 +130,7 @@
     <string name="title_logcat">Logcat</string>
     <string name="logcat_copy">Copy</string>
     <string name="title_export_all">Export all config to clipboard</string>
-    <string name="title_sub_setting">subscription setting</string>
+    <string name="title_sub_setting">Subscription setting</string>
     <string name="sub_setting_remarks">remarks</string>
     <string name="sub_setting_url">url</string>
     <string name="title_sub_update">Update subscription</string>
