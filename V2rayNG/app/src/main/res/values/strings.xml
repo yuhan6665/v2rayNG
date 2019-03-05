@@ -89,6 +89,10 @@
     <string name="summary_pref_sniffing_enabled">Sniffing</string>
 
     <string name="title_pref_local_dns_enabled">Enable local DNS</string>
+    <string name="summary_pref_local_dns_enabled">DNS processed by V2Ray-core (BETA)</string>
+
+    <string name="title_pref_forward_ipv6">Forward IPv6</string>
+    <string name="summary_pref_forward_ipv6">Assign IPv6 ULA / Route to VPN Service (BETA)</string>
 
     <string name="title_pref_routing_domain_strategy">Domain strategy</string>
     <string name="title_pref_routing">Routing mode</string>
@@ -98,7 +102,7 @@
     <string name="summary_pref_donate">Donate developer</string>
     <string name="donate_detail">Add some experimental advanced features</string>
 
-    <string name="title_pref_remote_dns">DNS(Optional)</string>
+    <string name="title_pref_remote_dns">Remote DNS (Optional)</string>
     <string name="summary_pref_remote_dns">DNS</string>
 
     <string name="title_pref_socks_port">SOCKS5 proxy port</string>

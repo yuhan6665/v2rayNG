@@ -76,7 +76,11 @@ object V2rayConfigUtil {
 
             routing(vmess, v2rayConfig, app)
 
-            customDns(vmess, v2rayConfig, app)
+            if(app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)) {
+                customLocalDns(vmess, v2rayConfig, app)
+            } else {
+                customRemoteDns(vmess, v2rayConfig, app)
+            }
 
             val finalConfig = Gson().toJson(v2rayConfig)
 
@@ -408,7 +412,7 @@ object V2rayConfigUtil {
     /**
      * Custom Dns
      */
-    private fun customDns(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
+    private fun customLocalDns(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
         try {
             val hosts = mutableMapOf<String, String>()
             val servers = ArrayList<Any>()
@@ -481,6 +485,23 @@ object V2rayConfigUtil {
         return true
     }
 
+    /**
+     * Custom Remote Dns
+     */
+    private fun customRemoteDns(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
+        try {
+            val servers = ArrayList<Any>()
+            Utils.getRemoteDnsServers(app.defaultDPreference).forEach {
+                servers.add(it)
+            }
+
+            v2rayConfig.dns = V2rayConfig.DnsBean(servers = servers)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return false
+        }
+        return true
+    }
     /**
      * is valid config
      */

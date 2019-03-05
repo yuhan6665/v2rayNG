@@ -28,7 +28,7 @@ class SettingsActivity : BaseActivity() {
 //        const val PREF_MUX_ENAimport libv2ray.Libv2rayBLED = "pref_mux_enabled"
         const val PREF_SPEED_ENABLED = "pref_speed_enabled"
         const val PREF_SNIFFING_ENABLED = "pref_sniffing_enabled"
-//        const val PREF_LOCAL_DNS_ENABLED = "pref_local_dns_enabled"
+        const val PREF_LOCAL_DNS_ENABLED = "pref_local_dns_enabled"
         const val PREF_REMOTE_DNS = "pref_remote_dns"
 
 //        const val PREF_SOCKS_PORT = "pref_socks_port"
@@ -44,6 +44,7 @@ class SettingsActivity : BaseActivity() {
 //        const val PREF_TG_GROUP = "pref_tg_group"
         const val PREF_VERSION = "pref_version"
         //        const val PREF_AUTO_RESTART = "pref_auto_restart"
+        const val PREF_FORWARD_IPV6 = "pref_forward_ipv6"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +60,9 @@ class SettingsActivity : BaseActivity() {
         val perAppProxy by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
         //        val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val remoteDns by lazy { findPreference(PREF_REMOTE_DNS) as EditTextPreference }
+
+        val enableLocalDns by lazy { findPreference(PREF_LOCAL_DNS_ENABLED) as CheckBoxPreference }
+        val forwardIpv6 by lazy { findPreference(PREF_FORWARD_IPV6) as CheckBoxPreference }
 
 //        val socksPort by lazy { findPreference(PREF_SOCKS_PORT) as EditTextPreference }
 //        val lanconnPort by lazy { findPreference(PREF_LANCONN_PORT) as EditTextPreference }
