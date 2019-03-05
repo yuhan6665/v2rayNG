@@ -84,24 +84,35 @@ class V2RayVpnService : VpnService() {
         // If the old interface has exactly the same parameters, use it!
         // Configure a builder while parsing the parameters.
         val builder = Builder()
+        val enableLocalDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
+        val forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
 
         parameters.split(" ")
                 .map { it.split(",") }
                 .forEach {
                     when (it[0][0]) {
                         'm' -> builder.setMtu(java.lang.Short.parseShort(it[1]).toInt())
-                        'a' -> builder.addAddress(it[1], Integer.parseInt(it[2]))
-                        'r' -> builder.addRoute(it[1], Integer.parseInt(it[2]))
                         's' -> builder.addSearchDomain(it[1])
-                        'd' -> builder.addDnsServer(it[1])
+                        'a' -> if( it[1].none{it == ':'} || forwardIpv6 ) {
+                                builder.addAddress(it[1], Integer.parseInt(it[2]))
+                            }
+                        'r' -> if( it[1].none{it == ':'} || forwardIpv6 ) {
+                                builder.addRoute(it[1], Integer.parseInt(it[2]))
+                            }
+                        'd' -> if(enableLocalDns) {
+                                builder.addDnsServer(it[1])
+                            }
                     }
                 }
 
+        if(!enableLocalDns) {
+            val dnsServers = Utils.getRemoteDnsServers(defaultDPreference)
+            for (dns in dnsServers) {
+                builder.addDnsServer(dns)
+            }
+        }
+
         builder.setSession(defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_NAME, ""))
-        // val dnsServers = Utils.getRemoteDnsServers(defaultDPreference)
-        // for (dns in dnsServers) {
-        //     builder.addDnsServer(dns)
-        // }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 defaultDPreference.getPrefBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {

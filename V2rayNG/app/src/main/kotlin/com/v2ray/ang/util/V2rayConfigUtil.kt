@@ -76,7 +76,9 @@ object V2rayConfigUtil {
 
             routing(vmess, v2rayConfig, app)
 
-            customDns(vmess, v2rayConfig, app)
+            if(app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)) {
+                customDns(vmess, v2rayConfig, app)
+            }
 
             val finalConfig = Gson().toJson(v2rayConfig)
 

@@ -88,6 +88,11 @@
     <string name="summary_pref_sniffing_enabled">流量探测</string>
 
     <string name="title_pref_local_dns_enabled">启用本地DNS</string>
+    <string name="summary_pref_local_dns_enabled">DNS请求由本地的v2ray core处理</string>
+
+    <string name="title_pref_forward_ipv6">转发IPv6流量</string>
+    <string name="summary_pref_forward_ipv6">VPN接口增加IPv6 ULA地址以及默认路由</string>
+
 
     <string name="title_pref_routing_domain_strategy">域名策略</string>
     <string name="title_pref_routing">路由模式</string>
