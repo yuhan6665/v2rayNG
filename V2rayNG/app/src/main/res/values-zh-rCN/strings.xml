@@ -88,10 +88,10 @@
     <string name="summary_pref_sniffing_enabled">流量探测</string>
 
     <string name="title_pref_local_dns_enabled">启用本地DNS</string>
-    <string name="summary_pref_local_dns_enabled">DNS请求由本地的v2ray core处理</string>
+    <string name="summary_pref_local_dns_enabled">DNS由本地的V2Ray core处理（测试）</string>
 
     <string name="title_pref_forward_ipv6">转发IPv6流量</string>
-    <string name="summary_pref_forward_ipv6">VPN接口增加IPv6 ULA地址以及默认路由</string>
+    <string name="summary_pref_forward_ipv6">VPN接口增加IPv6 ULA地址以及默认路由（测试）</string>
 
 
     <string name="title_pref_routing_domain_strategy">域名策略</string>
@@ -102,7 +102,7 @@
     <string name="summary_pref_donate">支持开发者</string>
     <string name="donate_detail">陆续增加一些试验性的进阶功能</string>
 
-    <string name="title_pref_remote_dns">DNS(可选)</string>
+    <string name="title_pref_remote_dns">远程DNS (可选)</string>
     <string name="summary_pref_remote_dns">DNS</string>
 
     <string name="title_pref_socks_port">SOCKS5代理端口</string>

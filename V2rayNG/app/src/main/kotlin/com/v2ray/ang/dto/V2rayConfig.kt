@@ -101,8 +101,8 @@ data class V2rayConfig(
     }
 
     //data class DnsBean(var servers: List<String>)
-    data class DnsBean(var servers: List<Any>,
-                       var hosts: Map<String, String>?
+    data class DnsBean(var servers: List<Any>?=null,
+                       var hosts: Map<String, String>?=null
     ) {
         data class ServersBean(var address: String = "",
                                var port: Int = 0,
