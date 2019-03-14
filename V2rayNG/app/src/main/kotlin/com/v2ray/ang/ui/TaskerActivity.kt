@@ -21,13 +21,16 @@ class TaskerActivity : BaseActivity() {
     private var listview: ListView? = null
     private var lstData: ArrayList<String> = ArrayList()
     private var lstGuid: ArrayList<String> = ArrayList()
-    private val vmess = AngConfigManager.configs.vmess
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tasker)
 
-        vmess.forEach {
+        //add def value
+        lstData.add("Default")
+        lstGuid.add(AppConfig.TASKER_DEFAULT_GUID)
+
+        AngConfigManager.configs.vmess.forEach {
             lstData.add(it.remarks)
             lstGuid.add(it.guid)
         }
@@ -68,10 +71,10 @@ class TaskerActivity : BaseActivity() {
 
         val extraBundle = Bundle()
         extraBundle.putBoolean(AppConfig.TASKER_EXTRA_BUNDLE_SWITCH, switch_start_service.isChecked)
-        extraBundle.putString(AppConfig.TASKER_EXTRA_BUNDLE_GUID, vmess[position].guid)
+        extraBundle.putString(AppConfig.TASKER_EXTRA_BUNDLE_GUID, lstGuid[position])
         val intent = Intent()
 
-        val remarks = vmess[position].remarks
+        val remarks = lstData[position]
         var blurb = ""
 
         if (switch_start_service.isChecked) {

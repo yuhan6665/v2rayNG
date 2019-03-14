@@ -22,6 +22,10 @@
                 android:id="@+id/import_manually_ss"
                 android:title="@string/menu_item_import_config_manually_ss"
                 app:showAsAction="never" />
+            <item
+                android:id="@+id/import_manually_socks"
+                android:title="@string/menu_item_import_config_manually_socks"
+                app:showAsAction="never" />
 
             <item
                 android:icon="@drawable/ic_add_white_24dp"
@@ -52,6 +56,11 @@
         android:id="@+id/export_all"
         android:icon="@drawable/ic_share_white_24dp"
         android:title="@string/title_export_all"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/ping_all"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/title_ping_all_server"
         app:showAsAction="never" />
     <item
         android:id="@+id/sub_update"

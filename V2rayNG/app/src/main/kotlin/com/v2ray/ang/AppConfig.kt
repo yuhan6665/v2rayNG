@@ -13,6 +13,7 @@ object AppConfig {
     const val PREF_CURR_CONFIG_DOMAIN = "pref_v2ray_config_domain"
     const val VMESS_PROTOCOL: String = "vmess://"
     const val SS_PROTOCOL: String = "ss://"
+    const val SOCKS_PROTOCOL: String = "socks://"
     const val BROADCAST_ACTION_SERVICE = "com.v2ray.ang.action.service"
     const val BROADCAST_ACTION_ACTIVITY = "com.v2ray.ang.action.activity"
     const val BROADCAST_ACTION_WIDGET_CLICK = "com.v2ray.ang.action.widget.click"
@@ -21,6 +22,7 @@ object AppConfig {
     const val TASKER_EXTRA_STRING_BLURB = "com.twofortyfouram.locale.intent.extra.BLURB"
     const val TASKER_EXTRA_BUNDLE_SWITCH = "tasker_extra_bundle_switch"
     const val TASKER_EXTRA_BUNDLE_GUID = "tasker_extra_bundle_guid"
+    const val TASKER_DEFAULT_GUID = "Default"
 
     const val PREF_V2RAY_ROUTING_AGENT = "pref_v2ray_routing_agent"
     const val PREF_V2RAY_ROUTING_DIRECT = "pref_v2ray_routing_direct"
@@ -52,6 +54,7 @@ object AppConfig {
         val Vmess = 1
         val Custom = 2
         val Shadowsocks = 3
+        val Socks = 4
     }
 
 }

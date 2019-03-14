@@ -10,6 +10,7 @@ import com.v2ray.ang.AppConfig.ANG_CONFIG
 import com.v2ray.ang.AppConfig.PREF_CURR_CONFIG
 import com.v2ray.ang.AppConfig.PREF_CURR_CONFIG_GUID
 import com.v2ray.ang.AppConfig.PREF_CURR_CONFIG_NAME
+import com.v2ray.ang.AppConfig.SOCKS_PROTOCOL
 import com.v2ray.ang.AppConfig.SS_PROTOCOL
 import com.v2ray.ang.AppConfig.VMESS_PROTOCOL
 import com.v2ray.ang.R
@@ -304,12 +305,43 @@ object AngConfigManager {
                 vmess.security = match.groupValues[1].toLowerCase()
                 vmess.id = match.groupValues[2]
                 vmess.address = match.groupValues[3]
-                if (vmess.address.firstOrNull() == '[' &&  vmess.address.lastOrNull() == ']')
+                if (vmess.address.firstOrNull() == '[' && vmess.address.lastOrNull() == ']')
                     vmess.address = vmess.address.substring(1, vmess.address.length - 1)
                 vmess.port = match.groupValues[4].toInt()
                 vmess.subid = subid
 
                 addShadowsocksServer(vmess, -1)
+            } else if (server.startsWith(SOCKS_PROTOCOL)) {
+                var result = server.replace(SOCKS_PROTOCOL, "")
+                val indexSplit = result.indexOf("#")
+                if (indexSplit > 0) {
+                    try {
+                        vmess.remarks = Utils.urlDecode(result.substring(indexSplit + 1, result.length))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    result = result.substring(0, indexSplit)
+                }
+
+                //part decode
+                val indexS = result.indexOf(":")
+                if (indexS < 0) {
+                    result = Utils.decode(result)
+                }
+
+                val legacyPattern = "^(.+?):(\\d+?)$".toRegex()
+                val match = legacyPattern.matchEntire(result)
+                if (match == null) {
+                    return R.string.toast_incorrect_protocol
+                }
+                vmess.address = match.groupValues[1]
+                if (vmess.address.firstOrNull() == '[' && vmess.address.lastOrNull() == ']')
+                    vmess.address = vmess.address.substring(1, vmess.address.length - 1)
+                vmess.port = match.groupValues[2].toInt()
+                vmess.subid = subid
+
+                addSocksServer(vmess, -1)
             } else {
                 return R.string.toast_incorrect_protocol
             }
@@ -391,6 +423,12 @@ object AngConfigManager {
                         vmess.address,
                         vmess.port)
                 return SS_PROTOCOL + Utils.encode(url) + remark
+            } else if (angConfig.vmess[index].configType == AppConfig.EConfigType.Socks) {
+                val remark = "#" + Utils.urlEncode(vmess.remarks)
+                val url = String.format("%s:%s",
+                        vmess.address,
+                        vmess.port)
+                return SOCKS_PROTOCOL + Utils.encode(url) + remark
             } else {
                 return ""
             }
@@ -644,6 +682,31 @@ object AngConfigManager {
         return 0
     }
 
+    fun addSocksServer(vmess: AngConfig.VmessBean, index: Int): Int {
+        try {
+            vmess.configVersion = 2
+            vmess.configType = AppConfig.EConfigType.Socks
+
+            if (index >= 0) {
+                //edit
+                angConfig.vmess[index] = vmess
+            } else {
+                //add
+                vmess.guid = System.currentTimeMillis().toString()
+                angConfig.vmess.add(vmess)
+                if (angConfig.vmess.count() == 1) {
+                    angConfig.index = 0
+                }
+            }
+
+            storeConfigFile()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return -1
+        }
+        return 0
+    }
+
     fun importBatchConfig(servers: String?, subid: String): Int {
         try {
             if (servers == null) {
@@ -743,4 +806,5 @@ object AngConfigManager {
         }
         return 0
     }
+
 }

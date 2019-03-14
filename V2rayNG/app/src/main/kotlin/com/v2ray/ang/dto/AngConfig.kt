@@ -19,6 +19,7 @@ data class AngConfig(
                          var streamSecurity: String = "",
                          var configType: Int = 1,
                          var configVersion: Int = 1,
+                         var testResult: String = "",
                          var subid: String = "")
 
     data class SubItemBean(var id: String = "",

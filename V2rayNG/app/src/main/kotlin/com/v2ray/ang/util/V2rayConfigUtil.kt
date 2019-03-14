@@ -3,6 +3,7 @@ package com.v2ray.ang.util
 import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.dto.AngConfig.VmessBean
@@ -43,6 +44,8 @@ object V2rayConfigUtil {
                 result = getV2rayConfigType2(app, vmess)
             } else if (vmess.configType == AppConfig.EConfigType.Shadowsocks) {
                 result = getV2rayConfigType1(app, vmess)
+            }else if (vmess.configType == AppConfig.EConfigType.Socks) {
+                result = getV2rayConfigType1(app, vmess)
             }
             Log.d("V2rayConfigUtilGoLog", result.content)
             return result
@@ -82,7 +85,7 @@ object V2rayConfigUtil {
                 customRemoteDns(vmess, v2rayConfig, app)
             }
 
-            val finalConfig = Gson().toJson(v2rayConfig)
+            val finalConfig =  GsonBuilder().setPrettyPrinting().create().toJson(v2rayConfig)
 
             result.status = true
             result.content = finalConfig
@@ -189,6 +192,18 @@ object V2rayConfigUtil {
                     outbound.mux?.enabled = false
 
                     outbound.protocol = "shadowsocks"
+                }
+                AppConfig.EConfigType.Socks -> {
+                    outbound.settings?.vnext = null
+
+                    val server = outbound.settings?.servers?.get(0)
+                    server?.address = vmess.address
+                    server?.port = vmess.port
+
+                    //Mux
+                    outbound.mux?.enabled = false
+
+                    outbound.protocol = "socks"
                 }
                 else -> {
                 }

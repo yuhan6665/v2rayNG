@@ -20,14 +20,16 @@ class TaskerReceiver : BroadcastReceiver() {
             if (switch == null || guid == null || TextUtils.isEmpty(guid)) {
                 return
             } else if (switch) {
-                Utils.startVService(context, guid)
+                if (guid == AppConfig.TASKER_DEFAULT_GUID) {
+                    Utils.startVService(context)
+                } else {
+                    Utils.startVService(context, guid)
+                }
             } else {
                 Utils.stopVService(context)
             }
         } catch (e: WriterException) {
             e.printStackTrace()
-
         }
-
     }
 }

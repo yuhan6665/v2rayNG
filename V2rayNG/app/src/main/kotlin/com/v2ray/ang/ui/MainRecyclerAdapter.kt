@@ -3,25 +3,20 @@ package com.v2ray.ang.ui
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.AngConfig
-import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.helper.ItemTouchHelperAdapter
 import com.v2ray.ang.helper.ItemTouchHelperViewHolder
-import com.v2ray.ang.service.V2RayVpnService
 import com.v2ray.ang.util.AngConfigManager
 import com.v2ray.ang.util.Utils
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_qrcode.view.*
 import kotlinx.android.synthetic.main.item_recycler_main.view.*
 import org.jetbrains.anko.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<MainRecyclerAdapter.BaseViewHolder>()
@@ -58,17 +53,17 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
             val subid = configs.vmess[position].subid
             val address = configs.vmess[position].address
             val port = configs.vmess[position].port
+            val test_result = configs.vmess[position].testResult
 
             holder.name.text = remarks
             holder.radio.isChecked = (position == configs.index)
             holder.itemView.backgroundColor = Color.TRANSPARENT
+            holder.test_result.text = test_result
 
             if (TextUtils.isEmpty(subid)) {
-
                 holder.subid.text = ""
             } else {
                 holder.subid.text = "S"
-
             }
 
             if (configType == AppConfig.EConfigType.Vmess) {
@@ -81,6 +76,10 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                 holder.layout_share.visibility = View.INVISIBLE
             } else if (configType == AppConfig.EConfigType.Shadowsocks) {
                 holder.type.text = "shadowsocks"
+                holder.statistics.text = "$address : $port"
+                holder.layout_share.visibility = View.VISIBLE
+            } else if (configType == AppConfig.EConfigType.Socks) {
+                holder.type.text = "socks"
                 holder.statistics.text = "$address : $port"
                 holder.layout_share.visibility = View.VISIBLE
             }
@@ -131,7 +130,17 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                     mActivity.startActivity<Server2Activity>("position" to position, "isRunning" to !changeable)
                 } else if (configType == AppConfig.EConfigType.Shadowsocks) {
                     mActivity.startActivity<Server3Activity>("position" to position, "isRunning" to !changeable)
+                } else if (configType == AppConfig.EConfigType.Socks) {
+                    mActivity.startActivity<Server4Activity>("position" to position, "isRunning" to !changeable)
                 }
+            }
+            holder.layout_remove.setOnClickListener {
+                if (configs.index != position) {
+                    if (AngConfigManager.removeServer(position) == 0) {
+                        notifyItemRemoved(position)
+                    }
+                }
+                notifyItemChanged(position)
             }
 
             holder.infoContainer.setOnClickListener {
@@ -150,7 +159,11 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                 }
                 notifyDataSetChanged()
             }
-        } else {
+        }
+        if (holder is FooterViewHolder) {
+            holder.layout_edit.setOnClickListener {
+                Utils.openUri(mActivity, AppConfig.promotionUrl)
+            }
         }
     }
 
@@ -174,6 +187,10 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         notifyItemChanged(configs.index)
     }
 
+    fun updateSelectedItem(pos: Int) {
+        notifyItemChanged(pos)
+    }
+
     override fun getItemViewType(position: Int): Int {
         if (position == configs.vmess.count()) {
             return VIEW_TYPE_FOOTER
@@ -188,11 +205,13 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         val subid = itemView.tv_subid
         val radio = itemView.btn_radio!!
         val name = itemView.tv_name!!
+        val test_result = itemView.tv_test_result!!
         val type = itemView.tv_type!!
         val statistics = itemView.tv_statistics!!
         val infoContainer = itemView.info_container!!
         val layout_edit = itemView.layout_edit!!
-        val layout_share = itemView.layout_share!!
+        val layout_share = itemView.layout_share
+        val layout_remove = itemView.layout_remove!!
 
         override fun onItemSelected() {
             itemView.setBackgroundColor(Color.LTGRAY)
@@ -203,7 +222,17 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         }
     }
 
-    class FooterViewHolder(itemView: View) : BaseViewHolder(itemView)
+    class FooterViewHolder(itemView: View) : BaseViewHolder(itemView), ItemTouchHelperViewHolder {
+        val layout_edit = itemView.layout_edit!!
+
+        override fun onItemSelected() {
+            itemView.setBackgroundColor(Color.LTGRAY)
+        }
+
+        override fun onItemClear() {
+            itemView.setBackgroundColor(0)
+        }
+    }
 
     override fun onItemDismiss(position: Int) {
         if (configs.index != position) {

@@ -18,8 +18,10 @@ import android.content.res.AssetManager
 import android.net.Uri
 import android.os.SystemClock
 import android.text.TextUtils
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.webkit.URLUtil
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
@@ -27,8 +29,10 @@ import com.v2ray.ang.R
 import com.v2ray.ang.extension.responseLength
 import com.v2ray.ang.service.V2RayVpnService
 import com.v2ray.ang.ui.SettingsActivity
+import kotlinx.android.synthetic.main.activity_logcat.*
 import me.dozen.dpreference.DPreference
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -182,9 +186,9 @@ object Utils {
     enum class AddressSpace { IPv4, IPv6, Invalid }
 
     data class IPAddressComponents(
-        val address: BigInteger,
-        val addressSpace: AddressSpace,
-        val port: Int  // -1 denotes 'not specified'
+            val address: BigInteger,
+            val addressSpace: AddressSpace,
+            val port: Int  // -1 denotes 'not specified'
     )
 
     val INVALID = IPAddressComponents(BigInteger.ZERO, AddressSpace.Invalid, 0)
@@ -199,8 +203,7 @@ object Utils {
             addressSpace = AddressSpace.IPv6
             trans = true
             ipa = ipa.drop(7)
-        }
-        else if (ipa.startsWith("[::ffff:") && '.' in ipa) {
+        } else if (ipa.startsWith("[::ffff:") && '.' in ipa) {
             addressSpace = AddressSpace.IPv6
             trans = true
             ipa = ipa.drop(8).replace("]", "")
@@ -224,8 +227,7 @@ object Utils {
             }
 
             if (trans) address += BigInteger("ffff00000000", 16)
-        }
-        else if (octets.size == 1) {
+        } else if (octets.size == 1) {
             addressSpace = AddressSpace.IPv6
             if (ipa[0] == '[') {
                 ipa = ipa.drop(1)
@@ -263,8 +265,7 @@ object Utils {
                 val bigNum = BigInteger.valueOf(num)
                 address = address.or(bigNum.shiftLeft(j * 16))
             }
-        }
-        else return INVALID
+        } else return INVALID
 
         return IPAddressComponents(address, addressSpace, port)
     }
@@ -475,6 +476,25 @@ object Utils {
         return content
     }
 
+    /**
+     * ping
+     */
+    fun ping(url: String): String {
+        try {
+            val command = "/system/bin/ping -c 1 $url"
+            val process = Runtime.getRuntime().exec(command)
+            val allText = process.inputStream.bufferedReader().use { it.readText() }
+            if (!TextUtils.isEmpty(allText)) {
+                val tempInfo = allText.substring(allText.indexOf("min/avg/max/mdev") + 19)
+                val temps = tempInfo.split("/".toRegex()).dropLastWhile({ it.isEmpty() }).toTypedArray()
+                if (temps.count() > 0 && temps[0].length < 10) {
+                    return temps[0].toFloat().toInt().toString() + "ms"
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "-1ms"
+    }
 }
-
 

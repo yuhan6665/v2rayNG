@@ -25,6 +25,7 @@
     <string name="menu_item_import_config_clipboard">从剪贴板导入</string>
     <string name="menu_item_import_config_manually_vmess">手动输入[Vmess]</string>
     <string name="menu_item_import_config_manually_ss">手动输入[Shadowsocks]</string>
+    <string name="menu_item_import_config_manually_socks">手动输入[Socks]</string>
     <string name="menu_item_import_config_custom">自定义配置</string>
     <string name="menu_item_import_config_custom_clipboard">从剪贴板导入自定义配置</string>
     <string name="menu_item_import_config_custom_local">从本地导入自定义配置</string>
@@ -120,6 +121,7 @@
     <string name="toast_tg_app_not_found">未找到Telegram app</string>
 
     <string name="title_pref_promotion">赞助推广</string>
+    <string name="summary_pref_promotion">一些推广,点击查看详情</string>
 
     <string name="title_pref_version">版本</string>
 
@@ -138,6 +140,7 @@
     <string name="sub_setting_remarks">备注</string>
     <string name="sub_setting_url">地址(url)</string>
     <string name="title_sub_update">更新订阅</string>
+    <string name="title_ping_all_server">测试所有配置延迟</string>
 
     <string name="tasker_start_service">启动服务</string>
     <string name="tasker_setting_confirm">确定</string>

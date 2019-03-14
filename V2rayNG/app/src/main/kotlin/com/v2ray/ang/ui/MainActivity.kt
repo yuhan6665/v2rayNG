@@ -28,11 +28,11 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
 import com.v2ray.ang.InappBuyActivity
-import com.v2ray.ang.extension.defaultDPreference
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import com.v2ray.ang.helper.SimpleItemTouchHelperCallback
+import com.v2ray.ang.util.AngConfigManager.configs
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
@@ -196,6 +196,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             adapter.updateConfigList()
             true
         }
+        R.id.import_manually_socks -> {
+            startActivity<Server4Activity>("position" to -1, "isRunning" to isRunning)
+            adapter.updateConfigList()
+            true
+        }
         R.id.import_config_custom_clipboard -> {
             importConfigCustomClipboard()
             true
@@ -231,6 +236,25 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
             true
         }
+
+        R.id.ping_all -> {
+            for (k in 0 until configs.vmess.count()) {
+                configs.vmess[k].testResult = ""
+                adapter.updateConfigList()
+            }
+            for (k in 0 until configs.vmess.count()) {
+                if (configs.vmess[k].configType != AppConfig.EConfigType.Custom) {
+                    doAsync {
+                        configs.vmess[k].testResult = Utils.ping(configs.vmess[k].address)
+                        uiThread {
+                            adapter.updateSelectedItem(k)
+                        }
+                    }
+                }
+            }
+            true
+        }
+
 //        R.id.settings -> {
 //            startActivity<SettingsActivity>("isRunning" to isRunning)
 //            true
@@ -267,7 +291,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     /**
      * import config from clipboard
      */
-    fun importClipboard(): Boolean {
+    fun importClipboard()
+            : Boolean {
         try {
             val clipboard = Utils.getClipboard(this)
             importBatchConfig(clipboard)
@@ -288,7 +313,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    fun importConfigCustomClipboard(): Boolean {
+    fun importConfigCustomClipboard()
+            : Boolean {
         try {
             val configText = Utils.getClipboard(this)
             if (TextUtils.isEmpty(configText)) {
@@ -316,7 +342,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         return true
     }
 
-    fun importConfigCustomUrlClipboard(): Boolean {
+    fun importConfigCustomUrlClipboard()
+            : Boolean {
         try {
             val url = Utils.getClipboard(this)
             if (TextUtils.isEmpty(url)) {
@@ -355,7 +382,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     /**
      * import config from sub
      */
-    fun importConfigViaSub(): Boolean {
+    fun importConfigViaSub()
+            : Boolean {
         try {
             toast(R.string.title_sub_update)
             val subItem = AngConfigManager.configs.subItem
@@ -452,7 +480,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 //        }
 //    }
 
-    private var mMsgReceive: BroadcastReceiver? = null
+    private
+    var mMsgReceive: BroadcastReceiver? = null
 
     private class ReceiveMessageHandler(activity: MainActivity) : BroadcastReceiver() {
         internal var mReference: SoftReference<MainActivity> = SoftReference(activity)

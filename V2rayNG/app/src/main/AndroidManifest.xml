@@ -49,6 +49,9 @@
         <activity
             android:name=".ui.Server3Activity"
             android:windowSoftInputMode="stateUnchanged" />
+        <activity
+            android:name=".ui.Server4Activity"
+            android:windowSoftInputMode="stateUnchanged" />
         <activity android:name=".ui.SettingsActivity" />
         <activity android:name=".ui.PerAppProxyActivity" />
         <activity android:name=".ui.ScannerActivity" />
