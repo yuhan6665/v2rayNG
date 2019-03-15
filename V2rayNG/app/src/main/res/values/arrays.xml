@@ -22,6 +22,7 @@
         <item>kcp</item>
         <item>ws</item>
         <item>h2</item>
+        <item>quic</item>
     </string-array>
 
     <string-array name="headertypes" translatable="false">

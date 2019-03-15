@@ -279,6 +279,19 @@ object V2rayConfigUtil {
                     tlssettings.allowInsecure = true
                     streamSettings.tlssettings = tlssettings
                 }
+                "quic" -> {
+                    val quicsettings = V2rayConfig.OutboundBean.StreamSettingsBean.QuicsettingBean()
+                    val host = vmess.requestHost.trim()
+                    val path = vmess.path.trim()
+
+                    quicsettings.security = host
+                    quicsettings.key = path
+
+                    quicsettings.header = V2rayConfig.OutboundBean.StreamSettingsBean.QuicsettingBean.HeaderBean()
+                    quicsettings.header.type = vmess.headerType
+
+                    streamSettings.quicsettings = quicsettings
+                }
                 else -> {
                     //tcp带http伪装
                     if (vmess.headerType == "http") {
