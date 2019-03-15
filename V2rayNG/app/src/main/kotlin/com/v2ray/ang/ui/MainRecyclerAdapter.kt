@@ -252,6 +252,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
         AngConfigManager.swapServer(fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
+        notifyDataSetChanged()
         return true
     }
 }
