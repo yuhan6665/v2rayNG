@@ -64,7 +64,8 @@ data class V2rayConfig(
                                       var kcpsettings: KcpsettingsBean?,
                                       var wssettings: WssettingsBean?,
                                       var httpsettings: HttpsettingsBean?,
-                                      var tlssettings: TlssettingsBean?
+                                      var tlssettings: TlssettingsBean?,
+                                      var quicsettings: QuicsettingBean?
         ) {
 
             data class TcpsettingsBean(var connectionReuse: Boolean = true,
@@ -95,6 +96,12 @@ data class V2rayConfig(
 
             data class TlssettingsBean(var allowInsecure: Boolean = true,
                                        var serverName: String = "")
+
+            data class QuicsettingBean(var security: String = "none",
+                                        var key: String = "",
+                                        var header: HeaderBean = HeaderBean()) {
+                data class HeaderBean(var type: String = "none")
+            }
         }
 
         data class MuxBean(var enabled: Boolean)

@@ -41,8 +41,8 @@
     <string name="server_lab_network">網路</string>
     <string name="server_lab_more_function">更多功能</string>
     <string name="server_lab_head_type">標頭類型</string>
-    <string name="server_lab_request_host">要求 主機(host/ws host/h2 host)</string>
-    <string name="server_lab_path">path(ws path/h2 path)</string>
+    <string name="server_lab_request_host">要求主機(host/ws host/h2 host)/QUIC加密方式</string>
+    <string name="server_lab_path">path(ws path/h2 path)/QUIC加密密鑰</string>
     <string name="server_lab_stream_security">傳輸層安全性</string>
     <string name="server_lab_allow_insecure">allowInsecure</string>
     <string name="server_lab_address3">伺服器位址</string>
