@@ -481,7 +481,7 @@ object Utils {
      */
     fun ping(url: String): String {
         try {
-            val command = "/system/bin/ping -c 1 $url"
+            val command = "/system/bin/ping -c 3 $url"
             val process = Runtime.getRuntime().exec(command)
             val allText = process.inputStream.bufferedReader().use { it.readText() }
             if (!TextUtils.isEmpty(allText)) {

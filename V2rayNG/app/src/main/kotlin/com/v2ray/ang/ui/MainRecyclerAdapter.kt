@@ -138,9 +138,9 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                 if (configs.index != position) {
                     if (AngConfigManager.removeServer(position) == 0) {
                         notifyItemRemoved(position)
+                        updateSelectedItem(position)
                     }
                 }
-                notifyItemChanged(position)
             }
 
             holder.infoContainer.setOnClickListener {
@@ -183,12 +183,13 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
         notifyDataSetChanged()
     }
 
-    fun updateSelectedItem() {
-        notifyItemChanged(configs.index)
-    }
+//    fun updateSelectedItem() {
+//        updateSelectedItem(configs.index)
+//    }
 
     fun updateSelectedItem(pos: Int) {
-        notifyItemChanged(pos)
+        //notifyItemChanged(pos)
+        notifyItemRangeChanged(pos, itemCount - pos)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -245,7 +246,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
 //                show()
 //            }
         }
-        notifyItemChanged(position)
+        updateSelectedItem(position)
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {

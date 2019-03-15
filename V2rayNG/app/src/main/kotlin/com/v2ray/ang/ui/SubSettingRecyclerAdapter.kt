@@ -47,9 +47,9 @@ class SubSettingRecyclerAdapter(val activity: SubSettingActivity) : RecyclerView
         notifyDataSetChanged()
     }
 
-    fun updateSelectedItem() {
-        notifyItemChanged(configs.index)
-    }
+//    fun updateSelectedItem() {
+//        notifyItemChanged(configs.index)
+//    }
 
     open class BaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
