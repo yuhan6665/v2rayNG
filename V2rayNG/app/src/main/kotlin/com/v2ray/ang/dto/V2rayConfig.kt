@@ -99,7 +99,7 @@ data class V2rayConfig(
 
             data class QuicsettingBean(var security: String = "none",
                                         var key: String = "",
-                                        var header： HeaderBean()) {
+                                        var header: HeaderBean = HeaderBean()) {
                 data class HeaderBean(var type: String = "none")
             }
         }

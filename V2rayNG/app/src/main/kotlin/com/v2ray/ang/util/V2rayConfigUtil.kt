@@ -224,7 +224,7 @@ object V2rayConfigUtil {
      * 远程服务器底层传输配置
      */
     private fun boundStreamSettings(vmess: VmessBean): V2rayConfig.OutboundBean.StreamSettingsBean {
-        val streamSettings = V2rayConfig.OutboundBean.StreamSettingsBean("", "", null, null, null, null, null)
+        val streamSettings = V2rayConfig.OutboundBean.StreamSettingsBean("", "", null, null, null, null, null, null)
         try {
             //远程服务器底层传输配置
             streamSettings.network = vmess.network
