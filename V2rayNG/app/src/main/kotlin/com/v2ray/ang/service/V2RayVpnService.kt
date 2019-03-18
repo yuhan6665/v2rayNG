@@ -168,8 +168,10 @@ class V2RayVpnService : VpnService() {
         if (prepare != null) {
             return
         }
+        val enableLocalDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
+        val forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
 
-        v2rayPoint.vpnSupportReady()
+        v2rayPoint.vpnSupportReady(enableLocalDns, forwardIpv6)
         if (v2rayPoint.isRunning) {
             MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_SUCCESS, "")
             showNotification()

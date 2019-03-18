@@ -139,7 +139,7 @@ object V2rayConfigUtil {
 //                httpCopy.protocol = "http"
 //                v2rayConfig.inbounds.add(httpCopy)
 //            }
-            v2rayConfig.inbounds[0].sniffing.enabled = app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SNIFFING_ENABLED, true)
+            v2rayConfig.inbounds[0].sniffing?.enabled = app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SNIFFING_ENABLED, true)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -472,9 +472,26 @@ object V2rayConfigUtil {
             // hardcode googleapi rule to fix play store problems
             hosts.put("domain:googleapis.cn", "googleapis.com")
 
+            // DNS dns对象
             v2rayConfig.dns = V2rayConfig.DnsBean(
                     servers = servers,
                     hosts = hosts)
+
+            // DNS inbound对象
+            if (v2rayConfig.inbounds.none { e -> e.protocol == "dokodemo-door" && e.tag == "dns-in" }) {
+                val dnsInboundSettings =  V2rayConfig.InboundBean.InSettingsBean(
+                    address = "1.1.1.1",
+                    port = 53,
+                    network = "tcp,udp")
+                val dnsInbound = V2rayConfig.InboundBean(
+                    tag = "dns-in",
+                    port = 10807,
+                    protocol = "dokodemo-door",
+                    settings = dnsInboundSettings,
+                    sniffing = null)
+
+                v2rayConfig.inbounds.add(dnsInbound)
+            }
 
             // DNS outbound对象
             if (v2rayConfig.outbounds.none { e -> e.protocol == "dns" && e.tag == "dns-out" }) {
@@ -488,13 +505,13 @@ object V2rayConfigUtil {
                 v2rayConfig.outbounds.add(dnsOutbound)
             }
 
-            // DNS Reroute to v2ray inner DNS
-            val rdnsRule = V2rayConfig.RoutingBean.RulesBean(
+            // DNS routing tag对象
+            val dnsTagRule = V2rayConfig.RoutingBean.RulesBean(
                     type = "field",
+                    inboundTag = arrayListOf<String>("dns-in"),
                     outboundTag = "dns-out",
-                    port = "53",
-                    ip = arrayListOf<String>("26.26.26.2"),
                     domain = null)
+            v2rayConfig.routing.rules.add(0, dnsTagRule)
 
             val ldnsRule = V2rayConfig.RoutingBean.RulesBean(
                     type = "field",
@@ -502,9 +519,7 @@ object V2rayConfigUtil {
                     port = "53",
                     ip = arrayListOf<String>(AppConfig.DNS_DIRECT),
                     domain = null)
-
             v2rayConfig.routing.rules.add(0, ldnsRule)
-            v2rayConfig.routing.rules.add(0, rdnsRule)
 
         } catch (e: Exception) {
             e.printStackTrace()

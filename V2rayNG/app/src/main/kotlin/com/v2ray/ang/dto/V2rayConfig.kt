@@ -18,11 +18,14 @@ data class V2rayConfig(
             var port: Int,
             var protocol: String,
             val settings: InSettingsBean,
-            val sniffing: SniffingBean) {
+            val sniffing: SniffingBean?) {
 
-        data class InSettingsBean(val auth: String,
-                                  val udp: Boolean,
-                                  val userLevel: Int)
+        data class InSettingsBean(val auth: String? = null,
+                                  val udp: Boolean? = null,
+                                  val userLevel: Int? =null,
+                                  val address: String? = null,
+                                  val port: Int? = null,
+                                  val network: String? = null)
 
         data class SniffingBean(var enabled: Boolean,
                                 val destOverride: List<String>)
@@ -123,7 +126,8 @@ data class V2rayConfig(
                              var ip: ArrayList<String>? = null,
                              var domain: ArrayList<String>? = null,
                              var outboundTag: String = "",
-                             var port: String? = null)
+                             var port: String? = null,
+                             var inboundTag: ArrayList<String>? = null)
     }
 
     data class PolicyBean(var levels: Map<String, LevelBean>,
