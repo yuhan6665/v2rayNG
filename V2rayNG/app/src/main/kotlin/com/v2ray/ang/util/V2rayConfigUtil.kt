@@ -451,7 +451,7 @@ object V2rayConfigUtil {
 
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_AGENT, 53, agDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(servers.first(), 53, agDomain))
             }
 
             val dirDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""))
@@ -505,21 +505,35 @@ object V2rayConfigUtil {
                 v2rayConfig.outbounds.add(dnsOutbound)
             }
 
-            // DNS routing tag对象
-            val dnsTagRule = V2rayConfig.RoutingBean.RulesBean(
-                    type = "field",
-                    inboundTag = arrayListOf<String>("dns-in"),
-                    outboundTag = "dns-out",
-                    domain = null)
-            v2rayConfig.routing.rules.add(0, dnsTagRule)
-
-            val ldnsRule = V2rayConfig.RoutingBean.RulesBean(
+            // DNS routing 
+            v2rayConfig.routing.rules.add(0, V2rayConfig.RoutingBean.RulesBean(
                     type = "field",
                     outboundTag = AppConfig.TAG_DIRECT,
                     port = "53",
                     ip = arrayListOf<String>(AppConfig.DNS_DIRECT),
                     domain = null)
-            v2rayConfig.routing.rules.add(0, ldnsRule)
+            )
+
+            var agent_dns = ArrayList<String>()
+            dns.forEach {
+                agent_dns.add(it)
+            }
+            
+            v2rayConfig.routing.rules.add(0, V2rayConfig.RoutingBean.RulesBean(
+                    type = "field",
+                    outboundTag = AppConfig.TAG_AGENT,
+                    port = "53",
+                    ip = agent_dns,
+                    domain = null)
+            )
+
+            // DNS routing tag
+            v2rayConfig.routing.rules.add(0, V2rayConfig.RoutingBean.RulesBean(
+                    type = "field",
+                    inboundTag = arrayListOf<String>("dns-in"),
+                    outboundTag = "dns-out",
+                    domain = null)
+            )
 
         } catch (e: Exception) {
             e.printStackTrace()

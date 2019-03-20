@@ -144,7 +144,7 @@ object Utils {
                         }
                     }
         }
-        ret.add("1.1.1.1")
+        ret.add(AppConfig.DNS_AGENT)
         return ret
     }
 
