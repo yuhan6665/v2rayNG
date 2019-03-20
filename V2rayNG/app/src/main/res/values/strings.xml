@@ -106,7 +106,7 @@
     <string name="title_pref_remote_dns">Remote DNS (Optional)</string>
     <string name="summary_pref_remote_dns">DNS</string>
 
-    <string name="title_pref_domestic_dns">Domestic DNS (Optional)</string>
+    <string name="title_pref_domestic_dns">Domestic DNS (Optional, effects on LocalDNS mode)</string>
     <string name="summary_pref_domestic_dns">DNS</string>
 
     <string name="title_pref_socks_port">SOCKS5 proxy port</string>

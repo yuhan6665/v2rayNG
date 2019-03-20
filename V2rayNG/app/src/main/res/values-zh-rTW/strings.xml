@@ -106,7 +106,7 @@
     <string name="title_pref_remote_dns">遠端DNS (可选)</string>
     <string name="summary_pref_remote_dns">DNS</string>
 
-    <string name="title_pref_domestic_dns">境内 DNS (可选)</string>
+    <string name="title_pref_domestic_dns">境内 DNS (可选，僅本地DNS模式下生效)</string>
     <string name="summary_pref_domestic_dns">DNS</string>
 
     <string name="title_pref_socks_port">SOCKS5代理端口</string>
