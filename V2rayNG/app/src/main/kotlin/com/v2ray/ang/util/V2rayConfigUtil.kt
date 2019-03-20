@@ -453,7 +453,7 @@ object V2rayConfigUtil {
 
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean(dns.first(), 53, agDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(remoteDns.first(), 53, agDomain))
             }
 
             val dirDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""))
@@ -482,7 +482,7 @@ object V2rayConfigUtil {
             // DNS inbound对象
             if (v2rayConfig.inbounds.none { e -> e.protocol == "dokodemo-door" && e.tag == "dns-in" }) {
                 val dnsInboundSettings =  V2rayConfig.InboundBean.InSettingsBean(
-                    address = dns.first(),
+                    address = remoteDns.first(),
                     port = 53,
                     network = "tcp,udp")
                 val dnsInbound = V2rayConfig.InboundBean(
