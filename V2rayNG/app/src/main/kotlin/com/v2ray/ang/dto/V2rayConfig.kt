@@ -17,6 +17,7 @@ data class V2rayConfig(
             var tag: String,
             var port: Int,
             var protocol: String,
+            var listen: String?=null,
             val settings: InSettingsBean,
             val sniffing: SniffingBean?) {
 

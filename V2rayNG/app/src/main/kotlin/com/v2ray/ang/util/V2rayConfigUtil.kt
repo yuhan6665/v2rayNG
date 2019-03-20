@@ -444,24 +444,26 @@ object V2rayConfigUtil {
         try {
             val hosts = mutableMapOf<String, String>()
             val servers = ArrayList<Any>()
-            val dns = Utils.getRemoteDnsServers(app.defaultDPreference)
-            dns.forEach {
+            val remoteDns = Utils.getRemoteDnsServers(app.defaultDPreference)
+            remoteDns.forEach {
                 servers.add(it)
             }
 
+            val domesticDns = Utils.getDomesticDnsServers(app.defaultDPreference)
+
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean(servers.first(), 53, agDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(dns.first(), 53, agDomain))
             }
 
             val dirDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_DIRECT, ""))
             if (dirDomain.size > 0) {
-                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_DIRECT, 53, dirDomain))
+                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, dirDomain))
             }
 
             val routingMode = app.defaultDPreference.getPrefString(SettingsActivity.PREF_ROUTING_MODE, "0")
             if (routingMode == "2" || routingMode == "3") {
-                servers.add(V2rayConfig.DnsBean.ServersBean(AppConfig.DNS_DIRECT, 53, arrayListOf("geosite:cn")))
+                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, arrayListOf("geosite:cn")))
             }
 
             val blkDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_BLOCKED, ""))
@@ -480,7 +482,7 @@ object V2rayConfigUtil {
             // DNS inbound对象
             if (v2rayConfig.inbounds.none { e -> e.protocol == "dokodemo-door" && e.tag == "dns-in" }) {
                 val dnsInboundSettings =  V2rayConfig.InboundBean.InSettingsBean(
-                    address = "1.1.1.1",
+                    address = dns.first(),
                     port = 53,
                     network = "tcp,udp")
                 val dnsInbound = V2rayConfig.InboundBean(
@@ -510,20 +512,15 @@ object V2rayConfigUtil {
                     type = "field",
                     outboundTag = AppConfig.TAG_DIRECT,
                     port = "53",
-                    ip = arrayListOf<String>(AppConfig.DNS_DIRECT),
+                    ip = domesticDns,
                     domain = null)
             )
 
-            var agent_dns = ArrayList<String>()
-            dns.forEach {
-                agent_dns.add(it)
-            }
-            
             v2rayConfig.routing.rules.add(0, V2rayConfig.RoutingBean.RulesBean(
                     type = "field",
                     outboundTag = AppConfig.TAG_AGENT,
                     port = "53",
-                    ip = agent_dns,
+                    ip = remoteDns,
                     domain = null)
             )
 

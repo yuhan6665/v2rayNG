@@ -11,6 +11,7 @@ import android.preference.PreferenceFragment
 import com.v2ray.ang.BuildConfig
 import com.v2ray.ang.InappBuyActivity
 import com.v2ray.ang.R
+import com.v2ray.ang.AppConfig
 import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.extension.onClick
 import com.v2ray.ang.util.Utils
@@ -30,6 +31,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_SNIFFING_ENABLED = "pref_sniffing_enabled"
         const val PREF_LOCAL_DNS_ENABLED = "pref_local_dns_enabled"
         const val PREF_REMOTE_DNS = "pref_remote_dns"
+        const val PREF_DOMESTIC_DNS = "pref_domestic_dns"
 
 //        const val PREF_SOCKS_PORT = "pref_socks_port"
 //        const val PREF_LANCONN_PORT = "pref_lanconn_port"
@@ -60,6 +62,7 @@ class SettingsActivity : BaseActivity() {
         val perAppProxy by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
         //        val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val remoteDns by lazy { findPreference(PREF_REMOTE_DNS) as EditTextPreference }
+        val domesticDns by lazy { findPreference(PREF_DOMESTIC_DNS) as EditTextPreference }
 
         val enableLocalDns by lazy { findPreference(PREF_LOCAL_DNS_ENABLED) as CheckBoxPreference }
         val forwardIpv6 by lazy { findPreference(PREF_FORWARD_IPV6) as CheckBoxPreference }
@@ -118,6 +121,10 @@ class SettingsActivity : BaseActivity() {
                 remoteDns.summary = any as String
                 true
             }
+            domesticDns.setOnPreferenceChangeListener { preference, any ->
+                domesticDns.summary = any as String
+                true
+            }
 //            socksPort.setOnPreferenceChangeListener { preference, any ->
 //                socksPort.summary = any as String
 //                true
@@ -134,7 +141,8 @@ class SettingsActivity : BaseActivity() {
             super.onStart()
 
             perAppProxy.isChecked = defaultSharedPreferences.getBoolean(PREF_PER_APP_PROXY, false)
-            remoteDns.summary = defaultSharedPreferences.getString(PREF_REMOTE_DNS, "")
+            remoteDns.summary = defaultSharedPreferences.getString(PREF_REMOTE_DNS, AppConfig.DNS_AGENT)
+            domesticDns.summary = defaultSharedPreferences.getString(PREF_DOMESTIC_DNS, AppConfig.DNS_DIRECT)
 
 //            socksPort.summary = defaultSharedPreferences.getString(PREF_SOCKS_PORT, "10808")
 //            lanconnPort.summary = defaultSharedPreferences.getString(PREF_LANCONN_PORT, "")
