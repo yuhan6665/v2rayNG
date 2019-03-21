@@ -144,6 +144,9 @@ object Utils {
                         }
                     }
         }
+        if (ret.size == 0) {
+            ret.add(AppConfig.DNS_AGENT)
+        }
         return ret
     }
 
@@ -161,6 +164,9 @@ object Utils {
                             ret.add(it)
                         }
                     }
+        }
+        if (ret.size == 0) {
+            ret.add(AppConfig.DNS_DIRECT)
         }
         return ret
     }

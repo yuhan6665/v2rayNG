@@ -118,11 +118,15 @@ class SettingsActivity : BaseActivity() {
             }
 
             remoteDns.setOnPreferenceChangeListener { preference, any ->
-                remoteDns.summary = any as String
+                // remoteDns.summary = any as String
+                val nval = any as String
+                remoteDns.summary = if (nval == "") AppConfig.DNS_AGENT else nval
                 true
             }
             domesticDns.setOnPreferenceChangeListener { preference, any ->
-                domesticDns.summary = any as String
+                // domesticDns.summary = any as String
+                val nval = any as String
+                domesticDns.summary = if (nval == "") AppConfig.DNS_DIRECT else nval
                 true
             }
 //            socksPort.setOnPreferenceChangeListener { preference, any ->
