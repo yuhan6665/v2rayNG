@@ -145,8 +145,16 @@ class SettingsActivity : BaseActivity() {
             super.onStart()
 
             perAppProxy.isChecked = defaultSharedPreferences.getBoolean(PREF_PER_APP_PROXY, false)
-            remoteDns.summary = defaultSharedPreferences.getString(PREF_REMOTE_DNS, AppConfig.DNS_AGENT)
-            domesticDns.summary = defaultSharedPreferences.getString(PREF_DOMESTIC_DNS, AppConfig.DNS_DIRECT)
+            remoteDns.summary = defaultSharedPreferences.getString(PREF_REMOTE_DNS, "")
+            domesticDns.summary = defaultSharedPreferences.getString(PREF_DOMESTIC_DNS, "")
+
+            if (remoteDns.summary == "") {
+                remoteDns.summary = AppConfig.DNS_AGENT
+            }
+
+            if ( domesticDns.summary == "") {
+                domesticDns.summary = AppConfig.DNS_DIRECT
+            }
 
 //            socksPort.summary = defaultSharedPreferences.getString(PREF_SOCKS_PORT, "10808")
 //            lanconnPort.summary = defaultSharedPreferences.getString(PREF_LANCONN_PORT, "")
