@@ -90,10 +90,10 @@
     <string name="summary_pref_sniffing_enabled">Sniffing</string>
 
     <string name="title_pref_local_dns_enabled">Enable local DNS</string>
-    <string name="summary_pref_local_dns_enabled">DNS processed by V2Ray-core (BETA)</string>
+    <string name="summary_pref_local_dns_enabled">DNS processed by v2ray-core (BETA)</string>
 
-    <string name="title_pref_forward_ipv6">Forward IPv6</string>
-    <string name="summary_pref_forward_ipv6">Assign IPv6 ULA / Route to VPN Service (BETA)</string>
+    <string name="title_pref_forward_ipv6">IPv6 Route</string>
+    <string name="summary_pref_forward_ipv6">Redirect IPv6 traffic to remote (BETA)</string>
 
     <string name="title_pref_routing_domain_strategy">Domain strategy</string>
     <string name="title_pref_routing">Routing mode</string>
