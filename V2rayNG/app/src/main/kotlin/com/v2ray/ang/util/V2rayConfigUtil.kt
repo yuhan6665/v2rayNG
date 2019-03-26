@@ -44,7 +44,7 @@ object V2rayConfigUtil {
                 result = getV2rayConfigType2(app, vmess)
             } else if (vmess.configType == AppConfig.EConfigType.Shadowsocks) {
                 result = getV2rayConfigType1(app, vmess)
-            }else if (vmess.configType == AppConfig.EConfigType.Socks) {
+            } else if (vmess.configType == AppConfig.EConfigType.Socks) {
                 result = getV2rayConfigType1(app, vmess)
             }
             Log.d("V2rayConfigUtilGoLog", result.content)
@@ -79,13 +79,13 @@ object V2rayConfigUtil {
 
             routing(vmess, v2rayConfig, app)
 
-            if(app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)) {
+            if (app.defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)) {
                 customLocalDns(vmess, v2rayConfig, app)
             } else {
                 customRemoteDns(vmess, v2rayConfig, app)
             }
 
-            val finalConfig =  GsonBuilder().setPrettyPrinting().create().toJson(v2rayConfig)
+            val finalConfig = GsonBuilder().setPrettyPrinting().create().toJson(v2rayConfig)
 
             result.status = true
             result.content = finalConfig
@@ -302,17 +302,27 @@ object V2rayConfigUtil {
 
                         if (requestObj.has("headers")
                                 || requestObj.optJSONObject("headers").has("Pragma")) {
-                            val arrHost = JSONArray()
+                            val arrHost = ArrayList<String>()
                             vmess.requestHost
                                     .split(",")
                                     .forEach {
-                                        arrHost.put(it)
+                                        arrHost.add(it)
                                     }
                             requestObj.optJSONObject("headers")
                                     .put("Host", arrHost)
-                            tcpSettings.header.request = requestObj
-                            tcpSettings.header.response = responseObj
+
                         }
+                        if (!TextUtils.isEmpty(vmess.path)) {
+                            val arrPath = ArrayList<String>()
+                            vmess.path
+                                    .split(",")
+                                    .forEach {
+                                        arrPath.add(it)
+                                    }
+                            requestObj.put("path", arrPath)
+                        }
+                        tcpSettings.header.request = requestObj
+                        //tcpSettings.header.response = responseObj
                         streamSettings.tcpSettings = tcpSettings
                     }
                 }
@@ -530,6 +540,7 @@ object V2rayConfigUtil {
         }
         return true
     }
+
     /**
      * is valid config
      */
