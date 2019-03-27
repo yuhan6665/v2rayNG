@@ -485,26 +485,26 @@ object V2rayConfigUtil {
                     address = remoteDns.first(),
                     port = 53,
                     network = "tcp,udp")
-                val dnsInbound = V2rayConfig.InboundBean(
-                    tag = "dns-in",
-                    port = 10807,
-                    protocol = "dokodemo-door",
-                    settings = dnsInboundSettings,
-                    sniffing = null)
 
-                v2rayConfig.inbounds.add(dnsInbound)
+                v2rayConfig.inbounds.add(
+                    V2rayConfig.InboundBean(
+                        tag = "dns-in",
+                        port = 10807,
+                        listen = "127.0.0.1",
+                        protocol = "dokodemo-door",
+                        settings = dnsInboundSettings,
+                        sniffing = null))
             }
 
             // DNS outbound对象
             if (v2rayConfig.outbounds.none { e -> e.protocol == "dns" && e.tag == "dns-out" }) {
-                val dnsOutbound = V2rayConfig.OutboundBean(
-                        protocol = "dns",
-                        tag = "dns-out",
-                        settings = null,
-                        streamSettings = null,
-                        mux = null)
-
-                v2rayConfig.outbounds.add(dnsOutbound)
+                v2rayConfig.outbounds.add(
+                    V2rayConfig.OutboundBean(
+                            protocol = "dns",
+                            tag = "dns-out",
+                            settings = null,
+                            streamSettings = null,
+                            mux = null))
             }
 
             // DNS routing 
