@@ -41,6 +41,11 @@
             android:summary="@string/summary_pref_remote_dns"
             android:title="@string/title_pref_remote_dns" />
 
+        <EditTextPreference
+            android:key="pref_domestic_dns"
+            android:summary="@string/summary_pref_domestic_dns"
+            android:title="@string/title_pref_domestic_dns" />
+
         <!--<EditTextPreference-->
         <!--android:enabled="false"-->
         <!--android:defaultValue="10808"-->

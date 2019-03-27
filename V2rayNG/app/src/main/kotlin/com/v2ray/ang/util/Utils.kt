@@ -132,8 +132,8 @@ object Utils {
     /**
      * get remote dns servers from preference
      */
-    fun getRemoteDnsServers(defaultDPreference: DPreference): List<String> {
-        val remoteDns = defaultDPreference.getPrefString(SettingsActivity.PREF_REMOTE_DNS, "")
+    fun getRemoteDnsServers(defaultDPreference: DPreference): ArrayList<String> {
+        val remoteDns = defaultDPreference.getPrefString(SettingsActivity.PREF_REMOTE_DNS, AppConfig.DNS_AGENT)
         val ret = ArrayList<String>()
         if (!TextUtils.isEmpty(remoteDns)) {
             remoteDns
@@ -144,7 +144,30 @@ object Utils {
                         }
                     }
         }
-        ret.add("1.1.1.1")
+        if (ret.size == 0) {
+            ret.add(AppConfig.DNS_AGENT)
+        }
+        return ret
+    }
+
+    /**
+     * get remote dns servers from preference
+     */
+    fun getDomesticDnsServers(defaultDPreference: DPreference): ArrayList<String> {
+        val domesticDns = defaultDPreference.getPrefString(SettingsActivity.PREF_DOMESTIC_DNS, AppConfig.DNS_DIRECT)
+        val ret = ArrayList<String>()
+        if (!TextUtils.isEmpty(domesticDns)) {
+            domesticDns
+                    .split(",")
+                    .forEach {
+                        if (Utils.isIpAddress(it)) {
+                            ret.add(it)
+                        }
+                    }
+        }
+        if (ret.size == 0) {
+            ret.add(AppConfig.DNS_DIRECT)
+        }
         return ret
     }
 

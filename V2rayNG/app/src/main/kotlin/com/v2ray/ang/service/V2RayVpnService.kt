@@ -85,7 +85,6 @@ class V2RayVpnService : VpnService() {
         // Configure a builder while parsing the parameters.
         val builder = Builder()
         val enableLocalDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
-        val forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
 
         parameters.split(" ")
                 .map { it.split(",") }
@@ -93,23 +92,17 @@ class V2RayVpnService : VpnService() {
                     when (it[0][0]) {
                         'm' -> builder.setMtu(java.lang.Short.parseShort(it[1]).toInt())
                         's' -> builder.addSearchDomain(it[1])
-                        'a' -> if( it[1].none{it == ':'} || forwardIpv6 ) {
-                                builder.addAddress(it[1], Integer.parseInt(it[2]))
-                            }
-                        'r' -> if( it[1].none{it == ':'} || forwardIpv6 ) {
-                                builder.addRoute(it[1], Integer.parseInt(it[2]))
-                            }
-                        'd' -> if(enableLocalDns) {
-                                builder.addDnsServer(it[1])
-                            }
+                        'a' -> builder.addAddress(it[1], Integer.parseInt(it[2]))
+                        'r' -> builder.addRoute(it[1], Integer.parseInt(it[2]))
+                        'd' -> builder.addDnsServer(it[1])
                     }
                 }
 
         if(!enableLocalDns) {
-            val dnsServers = Utils.getRemoteDnsServers(defaultDPreference)
-            for (dns in dnsServers) {
-                builder.addDnsServer(dns)
-            }
+            Utils.getRemoteDnsServers(defaultDPreference)
+                .forEach {
+                    builder.addDnsServer(it)
+                }
         }
 
         builder.setSession(defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_NAME, ""))
@@ -168,8 +161,10 @@ class V2RayVpnService : VpnService() {
         if (prepare != null) {
             return
         }
+        val enableLocalDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
+        val forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
 
-        v2rayPoint.vpnSupportReady()
+        v2rayPoint.vpnSupportReady(enableLocalDns, forwardIpv6)
         if (v2rayPoint.isRunning) {
             MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_SUCCESS, "")
             showNotification()

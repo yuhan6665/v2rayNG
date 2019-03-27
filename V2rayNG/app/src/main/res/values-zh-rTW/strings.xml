@@ -92,8 +92,8 @@
     <string name="title_pref_local_dns_enabled">啟用本地DNS</string>
     <string name="summary_pref_local_dns_enabled">DNS請求由本地的v2ray core處理（測試）</string>
 
-    <string name="title_pref_forward_ipv6">轉發IPv6數據</string>
-    <string name="summary_pref_forward_ipv6">VPN接口增加IPv6 ULA地址以及默認路由（測試）</string>
+    <string name="title_pref_forward_ipv6">IPv6 路由</string>
+    <string name="summary_pref_forward_ipv6">向遠端重新導向 IPv6 流量（測試）</string>
 
     <string name="title_pref_routing_domain_strategy">域名策略</string>
     <string name="title_pref_routing">路由模式</string>
@@ -105,6 +105,9 @@
 
     <string name="title_pref_remote_dns">遠端DNS (可选)</string>
     <string name="summary_pref_remote_dns">DNS</string>
+
+    <string name="title_pref_domestic_dns">境内DNS (可选，僅本地DNS模式下生效)</string>
+    <string name="summary_pref_domestic_dns">DNS</string>
 
     <string name="title_pref_socks_port">SOCKS5代理端口</string>
     <string name="summary_pref_socks_port">SOCKS5代理端口</string>
