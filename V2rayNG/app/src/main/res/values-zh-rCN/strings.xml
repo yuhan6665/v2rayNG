@@ -94,10 +94,10 @@
     <string name="title_pref_forward_ipv6">IPv6 路由</string>
     <string name="summary_pref_forward_ipv6">转发 IPv6 流量到远程服务器（测试）</string>
 
-
+    <string name="title_pref_routing">路由设置</string>
     <string name="title_pref_routing_domain_strategy">域名策略</string>
-    <string name="title_pref_routing">路由模式</string>
-    <string name="summary_pref_routing">自定义路由</string>
+    <string name="title_pref_routing_mode">路由模式</string>
+    <string name="title_pref_routing_custom">自定义路由</string>
 
     <string name="title_pref_donate">捐赠</string>
     <string name="summary_pref_donate">支持开发者</string>
@@ -114,9 +114,6 @@
 
     <string name="title_pref_lanconn_port">HTTP代理端口(0=不允许)</string>
     <string name="summary_pref_lanconn_port">HTTP代理端口</string>
-
-    <string name="title_pref_speedup_domain">加速域名解析</string>
-    <string name="summary_pref_speedup_domain">直连解析,可能存在问题,http/tls有效</string>
 
     <string name="title_pref_feedback">反馈</string>
     <string name="summary_pref_feedback">反馈改进或漏洞至 GitHub</string>

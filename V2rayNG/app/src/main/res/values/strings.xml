@@ -95,9 +95,10 @@
     <string name="title_pref_forward_ipv6">IPv6 Route</string>
     <string name="summary_pref_forward_ipv6">Redirect IPv6 traffic to remote (BETA)</string>
 
+    <string name="title_pref_routing">Routing</string>
     <string name="title_pref_routing_domain_strategy">Domain strategy</string>
-    <string name="title_pref_routing">Routing mode</string>
-    <string name="summary_pref_routing">Custom routing</string>
+    <string name="title_pref_routing_mode">Routing mode</string>
+    <string name="title_pref_routing_custom">Custom routing</string>
 
     <string name="title_pref_donate">Donate</string>
     <string name="summary_pref_donate">Donate developer</string>
@@ -114,9 +115,6 @@
 
     <string name="title_pref_lanconn_port">HTTP proxy port(0=not allowed)</string>
     <string name="summary_pref_lanconn_port">HTTP proxy port</string>
-
-    <string name="title_pref_speedup_domain">Speedup domain name resolution</string>
-    <string name="summary_pref_speedup_domain">Valid only for http/tls</string>
 
     <string name="title_pref_feedback">Feedback</string>
     <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>

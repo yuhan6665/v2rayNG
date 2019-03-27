@@ -35,11 +35,10 @@ class SettingsActivity : BaseActivity() {
 
 //        const val PREF_SOCKS_PORT = "pref_socks_port"
 //        const val PREF_LANCONN_PORT = "pref_lanconn_port"
-//        const val PREF_SPEEDUP_DOMAIN = "pref_speedup_domain"
 
         const val PREF_ROUTING_DOMAIN_STRATEGY = "pref_routing_domain_strategy"
         const val PREF_ROUTING_MODE = "pref_routing_mode"
-        const val PREF_ROUTING = "pref_routing"
+        const val PREF_ROUTING_CUSTOM = "pref_routing_custom"
 //        const val PREF_DONATE = "pref_donate"
         //        const val PREF_LICENSES = "pref_licenses"
 //        const val PREF_FEEDBACK = "pref_feedback"
@@ -70,7 +69,7 @@ class SettingsActivity : BaseActivity() {
 //        val socksPort by lazy { findPreference(PREF_SOCKS_PORT) as EditTextPreference }
 //        val lanconnPort by lazy { findPreference(PREF_LANCONN_PORT) as EditTextPreference }
 
-        val routing: Preference by lazy { findPreference(PREF_ROUTING) }
+        val routingCustom: Preference by lazy { findPreference(PREF_ROUTING_CUSTOM) }
 //        val donate: Preference by lazy { findPreference(PREF_DONATE) }
         //        val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
 //        val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
@@ -81,7 +80,7 @@ class SettingsActivity : BaseActivity() {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_settings)
 
-            routing.onClick {
+            routingCustom.onClick {
                 startActivity<RoutingSettingsActivity>()
             }
 
