@@ -496,5 +496,26 @@ object Utils {
         }
         return "-1ms"
     }
+
+    /**
+     * tcping
+     */
+    fun tcping(url: String, port: Int): String {
+
+        try {
+            val start = System.currentTimeMillis()
+            val socket = Socket(url, port)
+            val time = System.currentTimeMillis() - start
+            socket.close()
+            return time.toString() + "ms"
+        } catch (e: UnknownHostException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return "-1ms"
+    }
 }
 

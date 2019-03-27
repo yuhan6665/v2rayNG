@@ -245,7 +245,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             for (k in 0 until configs.vmess.count()) {
                 if (configs.vmess[k].configType != AppConfig.EConfigType.Custom) {
                     doAsync {
-                        configs.vmess[k].testResult = Utils.ping(configs.vmess[k].address)
+                        configs.vmess[k].testResult = Utils.tcping(configs.vmess[k].address, configs.vmess[k].port)
                         uiThread {
                             adapter.updateSelectedItem(k)
                         }

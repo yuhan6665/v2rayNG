@@ -4,23 +4,25 @@ import android.text.TextUtils
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
 import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.dto.AngConfig.VmessBean
 import com.v2ray.ang.dto.V2rayConfig
 import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.ui.SettingsActivity
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import com.google.gson.JsonObject
 
 object V2rayConfigUtil {
-    private val requestObj: JSONObject by lazy {
-        JSONObject("""{"version":"1.1","method":"GET","path":["/"],"headers":{"User-Agent":["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36","Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"],"Accept-Encoding":["gzip, deflate"],"Connection":["keep-alive"],"Pragma":"no-cache"}}""")
+    private val requestObj: JsonObject by lazy {
+        Gson().fromJson("""{"version":"1.1","method":"GET","path":["/"],"headers":{"User-Agent":["Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36","Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46"],"Accept-Encoding":["gzip, deflate"],"Connection":["keep-alive"],"Pragma":"no-cache"}}""", JsonObject::class.java)
     }
-    private val responseObj: JSONObject by lazy {
-        JSONObject("""{"version":"1.1","status":"200","reason":"OK","headers":{"Content-Type":["application/octet-stream","video/mpeg"],"Transfer-Encoding":["chunked"],"Connection":["keep-alive"],"Pragma":"no-cache"}}""")
-    }
+
+//    private val responseObj: JSONObject by lazy {
+//        JSONObject("""{"version":"1.1","status":"200","reason":"OK","headers":{"Content-Type":["application/octet-stream","video/mpeg"],"Transfer-Encoding":["chunked"],"Connection":["keep-alive"],"Pragma":"no-cache"}}""")
+//    }
 
     data class Result(var status: Boolean, var content: String)
 
@@ -300,26 +302,35 @@ object V2rayConfigUtil {
                         tcpSettings.header = V2rayConfig.OutboundBean.StreamSettingsBean.TcpsettingsBean.HeaderBean()
                         tcpSettings.header.type = vmess.headerType
 
-                        if (requestObj.has("headers")
-                                || requestObj.optJSONObject("headers").has("Pragma")) {
+//                        if (requestObj.has("headers")
+//                                || requestObj.optJSONObject("headers").has("Pragma")) {
+//                            val arrHost = ArrayList<String>()
+//                            vmess.requestHost
+//                                    .split(",")
+//                                    .forEach {
+//                                        arrHost.add(it)
+//                                    }
+//                            requestObj.optJSONObject("headers")
+//                                    .put("Host", arrHost)
+//
+//                        }
+                        if (!TextUtils.isEmpty(vmess.requestHost)) {
                             val arrHost = ArrayList<String>()
                             vmess.requestHost
                                     .split(",")
                                     .forEach {
-                                        arrHost.add(it)
+                                        arrHost.add("\"$it\"")
                                     }
-                            requestObj.optJSONObject("headers")
-                                    .put("Host", arrHost)
-
+                            requestObj.add("Host", Gson().fromJson(arrHost.toString(), JsonArray::class.java))
                         }
                         if (!TextUtils.isEmpty(vmess.path)) {
                             val arrPath = ArrayList<String>()
                             vmess.path
                                     .split(",")
                                     .forEach {
-                                        arrPath.add(it)
+                                        arrPath.add("\"$it\"")
                                     }
-                            requestObj.put("path", arrPath)
+                            requestObj.add("path", Gson().fromJson(arrPath.toString(), JsonArray::class.java))
                         }
                         tcpSettings.header.request = requestObj
                         //tcpSettings.header.response = responseObj
