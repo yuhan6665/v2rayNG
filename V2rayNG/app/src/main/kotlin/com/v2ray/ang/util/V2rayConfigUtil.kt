@@ -321,7 +321,8 @@ object V2rayConfigUtil {
                                     .forEach {
                                         arrHost.add("\"$it\"")
                                     }
-                            requestObj.add("Host", Gson().fromJson(arrHost.toString(), JsonArray::class.java))
+                            requestObj.getAsJsonObject("headers")
+                                    .add("Host", Gson().fromJson(arrHost.toString(), JsonArray::class.java))
                         }
                         if (!TextUtils.isEmpty(vmess.path)) {
                             val arrPath = ArrayList<String>()
