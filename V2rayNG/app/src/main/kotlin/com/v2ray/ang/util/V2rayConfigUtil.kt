@@ -629,7 +629,7 @@ object V2rayConfigUtil {
     private fun parseDomainName(outbound: JSONObject): String {
         try {
             if (outbound.has("settings")
-                    || outbound.optJSONObject("settings").has("vnext")) {
+                    && outbound.optJSONObject("settings").has("vnext")) {
                 val vnext = outbound.optJSONObject("settings").optJSONArray("vnext")
                 for (i in 0..(vnext.length() - 1)) {
                     val item = vnext.getJSONObject(i)
