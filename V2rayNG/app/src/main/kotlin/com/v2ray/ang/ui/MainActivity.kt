@@ -115,7 +115,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         showCircle()
 //        toast(R.string.toast_services_start)
-        Utils.startVService(this)
+        if (!Utils.startVService(this)) {
+            hideCircle()
+        }
     }
 
     override fun onStart() {

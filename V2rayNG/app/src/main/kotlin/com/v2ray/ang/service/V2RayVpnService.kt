@@ -190,7 +190,11 @@ class V2RayVpnService : VpnService() {
 
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.domainName = domainName
-            v2rayPoint.runLoop()
+            try {
+                v2rayPoint.runLoop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         //        showNotification()
     }
@@ -202,7 +206,11 @@ class V2RayVpnService : VpnService() {
 //        saveVpnNetworkInfo(configName, info)
 
         if (v2rayPoint.isRunning) {
-            v2rayPoint.stopLoop()
+            try {
+                v2rayPoint.stopLoop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_STOP_SUCCESS, "")
