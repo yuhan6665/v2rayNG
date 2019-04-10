@@ -78,6 +78,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation project(':dpreference')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
     // Android support library
     implementation "com.android.support:support-v4:$supportLibVersion"
     implementation "com.android.support:appcompat-v7:$supportLibVersion"
