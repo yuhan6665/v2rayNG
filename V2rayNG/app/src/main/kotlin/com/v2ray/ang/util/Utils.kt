@@ -41,6 +41,7 @@ import java.net.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.math.BigInteger
+import libv2ray.Libv2ray
 
 
 object Utils {
@@ -365,6 +366,13 @@ object Utils {
     fun startVService(context: Context): Boolean {
         context.toast(R.string.toast_services_start)
         if (AngConfigManager.genStoreV2rayConfig(-1)) {
+            val configContent = AngConfigManager.currGeneratedV2rayConfig()
+            try {
+                Libv2ray.testConfig(configContent)
+            } catch (e: Exception) {
+                context.toast(e.toString())
+                return false
+            }
             V2RayVpnService.startV2Ray(context)
             return true
         } else {

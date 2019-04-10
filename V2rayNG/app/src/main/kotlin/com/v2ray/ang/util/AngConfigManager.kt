@@ -202,6 +202,10 @@ object AngConfigManager {
         }
     }
 
+    fun currGeneratedV2rayConfig(): String {
+        return app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG, "")
+    }
+
     fun currConfigName(): String {
         if (angConfig.index < 0
                 || angConfig.vmess.count() <= 0

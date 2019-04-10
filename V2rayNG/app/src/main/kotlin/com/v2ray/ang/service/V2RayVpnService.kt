@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.*
 import android.net.VpnService
 import android.os.*
 import android.support.annotation.RequiresApi
@@ -35,6 +36,9 @@ import rx.Observable
 import rx.Subscription
 import java.io.FileInputStream
 import java.lang.ref.SoftReference
+import android.os.Build
+import android.annotation.TargetApi
+import android.support.v4.os.BuildCompat
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -61,6 +65,39 @@ class V2RayVpnService : VpnService() {
     private var mSubscription: Subscription? = null
     private var lastVpnBandwidth: VpnBandwidth? = null
     private var mNotificationManager: NotificationManager? = null
+
+
+
+    /**
+        * Unfortunately registerDefaultNetworkCallback is going to return our VPN interface: https://android.googlesource.com/platform/frameworks/base/+/dda156ab0c5d66ad82bdcf76cda07cbc0a9c8a2e
+        *
+        * This makes doing a requestNetwork with REQUEST necessary so that we don't get ALL possible networks that
+        * satisfies default network capabilities but only THE default network. Unfortunately we need to have
+        * android.permission.CHANGE_NETWORK_STATE to be able to call requestNetwork.
+        *
+        * Source: https://android.googlesource.com/platform/frameworks/base/+/2df4c7d/services/core/java/com/android/server/ConnectivityService.java#887
+        */
+    private val defaultNetworkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+            .build()
+
+
+    private val connectivity by lazy { getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
+    @TargetApi(Build.VERSION_CODES.P)
+    private val defaultNetworkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            setUnderlyingNetworks(arrayOf(network))
+        }
+        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities?) {
+            // it's a good idea to refresh capabilities
+            setUnderlyingNetworks(arrayOf(network))
+        }
+        override fun onLost(network: Network) {
+            setUnderlyingNetworks(null)
+        }
+    }
+    private var listeningForDefaultNetwork = false
 
     override fun onCreate() {
         super.onCreate()
@@ -129,6 +166,10 @@ class V2RayVpnService : VpnService() {
         } catch (ignored: Exception) {
         }
 
+
+        connectivity.requestNetwork(defaultNetworkRequest, defaultNetworkCallback)
+        listeningForDefaultNetwork = true
+
         // Create a new interface using the builder and save the parameters.
         mInterface = builder.establish()
         //Logger.d("VPNService", "New interface: " + parameters)
@@ -190,7 +231,11 @@ class V2RayVpnService : VpnService() {
 
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.domainName = domainName
-            v2rayPoint.runLoop()
+            try {
+                v2rayPoint.runLoop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
         //        showNotification()
     }
@@ -200,9 +245,17 @@ class V2RayVpnService : VpnService() {
 //        val emptyInfo = VpnNetworkInfo()
 //        val info = loadVpnNetworkInfo(configName, emptyInfo)!! + (lastNetworkInfo ?: emptyInfo)
 //        saveVpnNetworkInfo(configName, info)
+        if (BuildCompat.isAtLeastP() && listeningForDefaultNetwork) {
+            connectivity.unregisterNetworkCallback(defaultNetworkCallback)
+            listeningForDefaultNetwork = false
+        }
 
         if (v2rayPoint.isRunning) {
-            v2rayPoint.stopLoop()
+            try {
+                v2rayPoint.stopLoop()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
 
         MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_STOP_SUCCESS, "")
