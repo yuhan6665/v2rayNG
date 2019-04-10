@@ -357,6 +357,14 @@ object V2rayConfigUtil {
 
             v2rayConfig.routing.domainStrategy = app.defaultDPreference.getPrefString(SettingsActivity.PREF_ROUTING_DOMAIN_STRATEGY, "IPIfNonMatch")
             val routingMode = app.defaultDPreference.getPrefString(SettingsActivity.PREF_ROUTING_MODE, "0")
+
+            // Hardcode googleapis.cn
+            val googleapisRoute = V2rayConfig.RoutingBean.RulesBean(
+                type = "field",
+                outboundTag = AppConfig.TAG_AGENT,
+                domain = arrayListOf("domain:googleapis.cn")
+            )
+
             when (routingMode) {
                 "0" -> {
                 }
@@ -365,10 +373,12 @@ object V2rayConfigUtil {
                 }
                 "2" -> {
                     routingGeo("", "cn", AppConfig.TAG_DIRECT, v2rayConfig)
+                    v2rayConfig.routing.rules.add(0, googleapisRoute)
                 }
                 "3" -> {
                     routingGeo("ip", "private", AppConfig.TAG_DIRECT, v2rayConfig)
                     routingGeo("", "cn", AppConfig.TAG_DIRECT, v2rayConfig)
+                    v2rayConfig.routing.rules.add(0, googleapisRoute)
                 }
             }
         } catch (e: Exception) {
