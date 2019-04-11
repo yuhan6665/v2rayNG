@@ -532,13 +532,24 @@ object Utils {
      * tcping
      */
     fun tcping(url: String, port: Int): String {
+        var time = -1L
+        for (k in 0 until 3) {
+            val one = socketConnectTime(url, port)
+            if (one != -1L  )
+                if(time == -1L || one < time) {
+                time = one
+            }
+        }
+        return time.toString() + "ms"
+    }
 
+    fun socketConnectTime(url: String, port: Int): Long {
         try {
             val start = System.currentTimeMillis()
             val socket = Socket(url, port)
             val time = System.currentTimeMillis() - start
             socket.close()
-            return time.toString() + "ms"
+            return time
         } catch (e: UnknownHostException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -546,7 +557,7 @@ object Utils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return "-1ms"
+        return -1
     }
 }
 
