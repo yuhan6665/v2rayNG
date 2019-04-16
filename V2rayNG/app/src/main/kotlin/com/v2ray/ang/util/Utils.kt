@@ -533,7 +533,7 @@ object Utils {
      */
     fun tcping(url: String, port: Int): String {
         var time = -1L
-        for (k in 0 until 3) {
+        for (k in 0 until 2) {
             val one = socketConnectTime(url, port)
             if (one != -1L  )
                 if(time == -1L || one < time) {

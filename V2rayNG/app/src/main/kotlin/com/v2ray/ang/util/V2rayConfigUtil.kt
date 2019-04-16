@@ -264,6 +264,9 @@ object V2rayConfigUtil {
 
                     val tlssettings = V2rayConfig.OutboundBean.StreamSettingsBean.TlssettingsBean()
                     tlssettings.allowInsecure = true
+					if (!TextUtils.isEmpty(host)) {
+                        tlssettings.serverName = host
+                    }
                     streamSettings.tlssettings = tlssettings
                 }
                 "h2" -> {

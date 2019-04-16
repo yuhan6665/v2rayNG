@@ -123,7 +123,7 @@
     <string name="toast_tg_app_not_found">未找到Telegram app</string>
 
     <string name="title_pref_promotion">贊助推廣</string>
-    <string name="summary_pref_promotion">一些推廣,點擊查看詳情</string>
+    <string name="summary_pref_promotion">一些推廣,點擊查看詳情(捐款可去除)</string>
 
     <string name="title_pref_version">版本</string>
 

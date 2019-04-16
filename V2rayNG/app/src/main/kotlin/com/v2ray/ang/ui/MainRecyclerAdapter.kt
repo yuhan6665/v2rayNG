@@ -18,6 +18,7 @@ import org.jetbrains.anko.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
+import com.v2ray.ang.extension.defaultDPreference
 
 class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<MainRecyclerAdapter.BaseViewHolder>()
         , ItemTouchHelperAdapter {
@@ -153,7 +154,7 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
                     Observable.timer(1500, TimeUnit.MILLISECONDS)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
-                                if(!Utils.startVService(mActivity)) {
+                                if (!Utils.startVService(mActivity)) {
                                     mActivity.hideCircle()
                                 }
                             }
@@ -163,8 +164,12 @@ class MainRecyclerAdapter(val activity: MainActivity) : RecyclerView.Adapter<Mai
             }
         }
         if (holder is FooterViewHolder) {
-            holder.layout_edit.setOnClickListener {
-                Utils.openUri(mActivity, AppConfig.promotionUrl)
+            if (activity?.defaultDPreference?.getPrefBoolean(AppConfig.PREF_INAPP_BUY_IS_PREMIUM, false)) {
+                holder.layout_edit.visibility = View.INVISIBLE
+            } else {
+                holder.layout_edit.setOnClickListener {
+                    Utils.openUri(mActivity, AppConfig.promotionUrl)
+                }
             }
         }
     }

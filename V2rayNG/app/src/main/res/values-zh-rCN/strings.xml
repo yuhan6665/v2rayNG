@@ -121,7 +121,7 @@
     <string name="toast_tg_app_not_found">未找到Telegram app</string>
 
     <string name="title_pref_promotion">赞助推广</string>
-    <string name="summary_pref_promotion">一些推广,点击查看详情</string>
+    <string name="summary_pref_promotion">一些推广,点击查看详情(捐赠可去除)</string>
 
     <string name="title_pref_version">版本</string>
 
