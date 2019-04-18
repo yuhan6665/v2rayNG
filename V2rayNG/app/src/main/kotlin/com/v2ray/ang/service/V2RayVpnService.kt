@@ -167,8 +167,10 @@ class V2RayVpnService : VpnService() {
         }
 
 
-        connectivity.requestNetwork(defaultNetworkRequest, defaultNetworkCallback)
-        listeningForDefaultNetwork = true
+        if (BuildCompat.isAtLeastP()) {
+            connectivity.requestNetwork(defaultNetworkRequest, defaultNetworkCallback)
+            listeningForDefaultNetwork = true
+        }
 
         // Create a new interface using the builder and save the parameters.
         mInterface = builder.establish()
