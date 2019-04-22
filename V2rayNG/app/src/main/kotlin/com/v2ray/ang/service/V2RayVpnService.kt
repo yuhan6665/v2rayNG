@@ -84,7 +84,7 @@ class V2RayVpnService : VpnService() {
 
 
     private val connectivity by lazy { getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
-    @TargetApi(Build.VERSION_CODES.P)
+    @TargetApi(28)
     private val defaultNetworkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             setUnderlyingNetworks(arrayOf(network))
@@ -167,7 +167,7 @@ class V2RayVpnService : VpnService() {
         }
 
 
-        if (BuildCompat.isAtLeastP()) {
+        if (Build.VERSION.SDK_INT >= 28) {
             connectivity.requestNetwork(defaultNetworkRequest, defaultNetworkCallback)
             listeningForDefaultNetwork = true
         }
@@ -247,7 +247,7 @@ class V2RayVpnService : VpnService() {
 //        val emptyInfo = VpnNetworkInfo()
 //        val info = loadVpnNetworkInfo(configName, emptyInfo)!! + (lastNetworkInfo ?: emptyInfo)
 //        saveVpnNetworkInfo(configName, info)
-        if (BuildCompat.isAtLeastP() && listeningForDefaultNetwork) {
+        if (listeningForDefaultNetwork) {
             connectivity.unregisterNetworkCallback(defaultNetworkCallback)
             listeningForDefaultNetwork = false
         }
