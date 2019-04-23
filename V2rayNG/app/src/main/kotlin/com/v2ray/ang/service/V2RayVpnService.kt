@@ -30,7 +30,6 @@ import com.v2ray.ang.ui.SettingsActivity
 import com.v2ray.ang.util.MessageUtil
 import com.v2ray.ang.util.Utils
 import libv2ray.Libv2ray
-import libv2ray.V2RayCallbacks
 import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Observable
 import rx.Subscription
@@ -118,6 +117,12 @@ class V2RayVpnService : VpnService() {
     }
 
     fun setup(parameters: String) {
+
+        val prepare = VpnService.prepare(this)
+        if (prepare != null) {
+            return
+        }
+
         // If the old interface has exactly the same parameters, use it!
         // Configure a builder while parsing the parameters.
         val builder = Builder()
@@ -198,25 +203,6 @@ class V2RayVpnService : VpnService() {
         //return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun vpnCheckIsReady() {
-        val prepare = VpnService.prepare(this)
-
-        if (prepare != null) {
-            return
-        }
-        val enableLocalDns = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
-        val forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
-
-        v2rayPoint.vpnSupportReady(enableLocalDns, forwardIpv6)
-        if (v2rayPoint.isRunning) {
-            MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_SUCCESS, "")
-            showNotification()
-        } else {
-            MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_FAILURE, "")
-            cancelNotification()
-        }
-    }
-
     private fun startV2ray() {
         if (!v2rayPoint.isRunning) {
 
@@ -225,18 +211,25 @@ class V2RayVpnService : VpnService() {
             } catch (e: Exception) {
             }
 
-            val domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
             configContent = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG, "")
 
-            v2rayPoint.callbacks = v2rayCallback
-            v2rayPoint.setVpnSupportSet(v2rayCallback)
-
+            v2rayPoint.supportSet = v2rayCallback
             v2rayPoint.configureFileContent = configContent
-            v2rayPoint.domainName = domainName
+            v2rayPoint.enableLocalDNS = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
+            v2rayPoint.forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
+
             try {
                 v2rayPoint.runLoop()
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+
+            if (v2rayPoint.isRunning) {
+                MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_SUCCESS, "")
+                showNotification()
+            } else {
+                MessageUtil.sendMsg2UI(this, AppConfig.MSG_STATE_START_FAILURE, "")
+                cancelNotification()
             }
         }
         //        showNotification()
@@ -378,14 +371,13 @@ class V2RayVpnService : VpnService() {
         }
 
 
-    private inner class V2RayCallback : V2RayCallbacks, V2RayVPNServiceSupportsSet {
+    private inner class V2RayCallback : V2RayVPNServiceSupportsSet {
         override fun shutdown() = 0L
 
         override fun getVPNFd() = this@V2RayVpnService.fd.toLong()
 
         override fun prepare(): Long {
-            vpnCheckIsReady()
-            return 1
+            return 0
         }
 
         override fun protect(l: Long) = (if (this@V2RayVpnService.protect(l.toInt())) 0 else 1).toLong()
