@@ -212,6 +212,7 @@ class V2RayVpnService : VpnService() {
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.enableLocalDNS = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
             v2rayPoint.forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
+            v2rayPoint.domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
 
             try {
                 v2rayPoint.runLoop()
