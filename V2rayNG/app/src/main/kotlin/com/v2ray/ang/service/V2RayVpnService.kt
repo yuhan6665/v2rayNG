@@ -221,7 +221,6 @@ class V2RayVpnService : VpnService() {
                 v2rayPoint.domainIP = domain
             } else {
                 val ipaddrs = InetAddress.getAllByName(domain)
-                Log.d("ngDNS", ipaddrs.toString())
                 val ipaddr = ipaddrs.first()
                 v2rayPoint.domainIP = ipaddr.getHostAddress()
             }
