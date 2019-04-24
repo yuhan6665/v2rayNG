@@ -15,15 +15,11 @@ import android.net.VpnService
 import android.os.*
 import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
-import android.text.TextUtils
-import android.util.Log
-import com.v2ray.ang.AngApplication
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
 import com.v2ray.ang.dto.VpnBandwidth
 import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.extension.toSpeedString
-import com.v2ray.ang.extension.v2RayApplication
 import com.v2ray.ang.ui.MainActivity
 import com.v2ray.ang.ui.PerAppProxyActivity
 import com.v2ray.ang.ui.SettingsActivity
@@ -33,11 +29,9 @@ import libv2ray.Libv2ray
 import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Observable
 import rx.Subscription
-import java.io.FileInputStream
 import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
-import android.support.v4.os.BuildCompat
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -76,6 +70,7 @@ class V2RayVpnService : VpnService() {
         *
         * Source: https://android.googlesource.com/platform/frameworks/base/+/2df4c7d/services/core/java/com/android/server/ConnectivityService.java#887
         */
+    @TargetApi(28)
     private val defaultNetworkRequest = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
@@ -240,11 +235,12 @@ class V2RayVpnService : VpnService() {
 //        val emptyInfo = VpnNetworkInfo()
 //        val info = loadVpnNetworkInfo(configName, emptyInfo)!! + (lastNetworkInfo ?: emptyInfo)
 //        saveVpnNetworkInfo(configName, info)
-        if (listeningForDefaultNetwork) {
-            connectivity.unregisterNetworkCallback(defaultNetworkCallback)
-            listeningForDefaultNetwork = false
+        if (Build.VERSION.SDK_INT >= 28) {
+            if (listeningForDefaultNetwork) {
+                connectivity.unregisterNetworkCallback(defaultNetworkCallback)
+                listeningForDefaultNetwork = false
+            }
         }
-
         if (v2rayPoint.isRunning) {
             try {
                 v2rayPoint.stopLoop()
@@ -261,6 +257,11 @@ class V2RayVpnService : VpnService() {
                 unregisterReceiver(mMsgReceive)
             } catch (e: Exception) {
             }
+            try {
+                mInterface.close()
+            } catch (ignored: Exception) {
+            }
+
             stopSelf()
         }
     }
@@ -360,9 +361,9 @@ class V2RayVpnService : VpnService() {
                 // }
                 // netDev.close()
 
-                var uplink = v2rayPoint.queryStats("socks", "uplink")
-                var downlink = v2rayPoint.queryStats("socks", "downlink")
-                var bandWidth = VpnBandwidth(downlink, uplink)
+                val uplink = v2rayPoint.queryStats("socks", "uplink")
+                val downlink = v2rayPoint.queryStats("socks", "downlink")
+                val bandWidth = VpnBandwidth(downlink, uplink)
                 return bandWidth
             } catch (e: Exception) {
                 e.printStackTrace()

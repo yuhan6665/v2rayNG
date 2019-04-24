@@ -11,7 +11,7 @@ android {
         minSdkVersion 17
         targetSdkVersion Integer.parseInt("$targetSdkVer")
         multiDexEnabled true
-        versionCode 188
+        versionCode 196
         versionName "0.6.19"
     }
 
