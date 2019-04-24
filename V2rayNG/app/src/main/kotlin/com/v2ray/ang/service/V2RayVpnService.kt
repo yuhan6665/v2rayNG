@@ -29,6 +29,8 @@ import libv2ray.Libv2ray
 import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Observable
 import rx.Subscription
+import java.net.InetAddress
+import java.io.FileInputStream
 import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
@@ -192,6 +194,13 @@ class V2RayVpnService : VpnService() {
         }
     }
 
+    fun shutdown() {
+        try {
+            mInterface.close()
+        } catch (ignored: Exception) {
+        }
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startV2ray()
         return START_STICKY
@@ -206,13 +215,24 @@ class V2RayVpnService : VpnService() {
             } catch (e: Exception) {
             }
 
+            val domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
+            val domain = domainName.substringBeforeLast(":")
+            if(Utils.isIpAddress(domainName)) {
+                v2rayPoint.domainIP = domain
+            } else {
+                val ipaddrs = InetAddress.getAllByName(domain)
+                Log.d("ngDNS", ipaddrs.toString())
+                val ipaddr = ipaddrs.first()
+                v2rayPoint.domainIP = ipaddr.getHostAddress()
+            }
+
             configContent = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG, "")
 
             v2rayPoint.supportSet = v2rayCallback
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.enableLocalDNS = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
             v2rayPoint.forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
-            v2rayPoint.domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
+            v2rayPoint.domainName = domainName
 
             try {
                 v2rayPoint.runLoop()
@@ -374,7 +394,15 @@ class V2RayVpnService : VpnService() {
 
 
     private inner class V2RayCallback : V2RayVPNServiceSupportsSet {
-        override fun shutdown() = 0L
+        override fun shutdown(): Long {
+            try {
+                this@V2RayVpnService.shutdown()
+                return 0
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return -1
+            }
+        }
 
         override fun getVPNFd() = this@V2RayVpnService.fd.toLong()
 

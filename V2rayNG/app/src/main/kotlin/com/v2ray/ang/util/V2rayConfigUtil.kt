@@ -49,6 +49,12 @@ object V2rayConfigUtil {
             } else if (vmess.configType == AppConfig.EConfigType.Socks) {
                 result = getV2rayConfigType1(app, vmess)
             }
+
+            val domainName = parseDomainName(result.content)
+            if (!TextUtils.isEmpty(domainName)) {
+                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, domainName)
+            }
+
             Log.d("V2rayConfigUtilGoLog", result.content)
             return result
         } catch (e: Exception) {
@@ -107,12 +113,6 @@ object V2rayConfigUtil {
         try {
             val guid = vmess.guid
             val jsonConfig = app.defaultDPreference.getPrefString(AppConfig.ANG_CONFIG + guid, "")
-
-            val domainName = parseDomainName(jsonConfig)
-            if (!TextUtils.isEmpty(domainName)) {
-                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, domainName)
-            }
-
             result.status = true
             result.content = jsonConfig
             return result
@@ -662,7 +662,11 @@ object V2rayConfigUtil {
                     val item = vnext.getJSONObject(i)
                     val address = item.getString("address")
                     val port = item.getString("port")
-                    if (!Utils.isIpAddress(address)) {
+                    if(Utils.isIpv6Address(address)) {
+                        return String.format("[%s]:%s", address, port)
+                    } else if (!Utils.isIpAddress(address)) {
+                        return String.format("%s:%s", address, port)
+                    } else {
                         return String.format("%s:%s", address, port)
                     }
                 }
