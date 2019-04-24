@@ -49,6 +49,12 @@ object V2rayConfigUtil {
             } else if (vmess.configType == AppConfig.EConfigType.Socks) {
                 result = getV2rayConfigType1(app, vmess)
             }
+
+            val domainName = parseDomainName(result.content)
+            if (!TextUtils.isEmpty(domainName)) {
+                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, domainName)
+            }
+
             Log.d("V2rayConfigUtilGoLog", result.content)
             return result
         } catch (e: Exception) {
@@ -107,12 +113,6 @@ object V2rayConfigUtil {
         try {
             val guid = vmess.guid
             val jsonConfig = app.defaultDPreference.getPrefString(AppConfig.ANG_CONFIG + guid, "")
-
-            val domainName = parseDomainName(jsonConfig)
-            if (!TextUtils.isEmpty(domainName)) {
-                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, domainName)
-            }
-
             result.status = true
             result.content = jsonConfig
             return result
@@ -486,12 +486,6 @@ object V2rayConfigUtil {
 
             val domesticDns = Utils.getDomesticDnsServers(app.defaultDPreference)
 
-            val nodeDomain = app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
-            if (nodeDomain != "" && !Utils.isIpAddress(nodeDomain)) {
-                val rawdomain = nodeDomain.substringBeforeLast(":")
-                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, arrayListOf("domain:"+rawdomain)))
-            }
-
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
                 servers.add(V2rayConfig.DnsBean.ServersBean(remoteDns.first(), 53, agDomain))
@@ -587,13 +581,6 @@ object V2rayConfigUtil {
         try {
             val servers = ArrayList<Any>()
 
-            val nodeDomain = app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
-            if (nodeDomain != "" && !Utils.isIpAddress(nodeDomain)) {
-                val rawdomain = nodeDomain.substringBeforeLast(":")
-                val domesticDns = Utils.getDomesticDnsServers(app.defaultDPreference)
-                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, arrayListOf("domain:"+rawdomain)))
-            }
-
             Utils.getRemoteDnsServers(app.defaultDPreference).forEach {
                 servers.add(it)
             }
@@ -662,7 +649,11 @@ object V2rayConfigUtil {
                     val item = vnext.getJSONObject(i)
                     val address = item.getString("address")
                     val port = item.getString("port")
-                    if (!Utils.isIpAddress(address)) {
+                    if(Utils.isIpv6Address(address)) {
+                        return String.format("[%s]:%s", address, port)
+                    } else if (!Utils.isIpAddress(address)) {
+                        return String.format("%s:%s", address, port)
+                    } else {
                         return String.format("%s:%s", address, port)
                     }
                 }
