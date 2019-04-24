@@ -486,6 +486,12 @@ object V2rayConfigUtil {
 
             val domesticDns = Utils.getDomesticDnsServers(app.defaultDPreference)
 
+            val nodeDomain = app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
+            if (nodeDomain != "" && !Utils.isIpAddress(nodeDomain)) {
+                val rawdomain = nodeDomain.substringBeforeLast(":")
+                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, arrayListOf("domain:"+rawdomain)))
+            }
+
             val agDomain = userRule2Domian(app.defaultDPreference.getPrefString(AppConfig.PREF_V2RAY_ROUTING_AGENT, ""))
             if (agDomain.size > 0) {
                 servers.add(V2rayConfig.DnsBean.ServersBean(remoteDns.first(), 53, agDomain))
@@ -580,6 +586,14 @@ object V2rayConfigUtil {
     private fun customRemoteDns(vmess: VmessBean, v2rayConfig: V2rayConfig, app: AngApplication): Boolean {
         try {
             val servers = ArrayList<Any>()
+
+            val nodeDomain = app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
+            if (nodeDomain != "" && !Utils.isIpAddress(nodeDomain)) {
+                val rawdomain = nodeDomain.substringBeforeLast(":")
+                val domesticDns = Utils.getDomesticDnsServers(app.defaultDPreference)
+                servers.add(V2rayConfig.DnsBean.ServersBean(domesticDns.first(), 53, arrayListOf("domain:"+rawdomain)))
+            }
+
             Utils.getRemoteDnsServers(app.defaultDPreference).forEach {
                 servers.add(it)
             }
