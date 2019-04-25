@@ -215,23 +215,12 @@ class V2RayVpnService : VpnService() {
             } catch (e: Exception) {
             }
 
-            val domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
-            val domain = domainName.substringBeforeLast(":")
-            if(Utils.isIpAddress(domainName)) {
-                v2rayPoint.domainIP = domain
-            } else {
-                val ipaddrs = InetAddress.getAllByName(domain)
-                val ipaddr = ipaddrs.first()
-                v2rayPoint.domainIP = ipaddr.getHostAddress()
-            }
-
             configContent = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG, "")
-
             v2rayPoint.supportSet = v2rayCallback
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.enableLocalDNS = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_LOCAL_DNS_ENABLED, false)
             v2rayPoint.forwardIpv6 = defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FORWARD_IPV6, false)
-            v2rayPoint.domainName = domainName
+            v2rayPoint.domainName = defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, "")
 
             try {
                 v2rayPoint.runLoop()
