@@ -49,11 +49,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             if (value) {
                 fab.imageResource = R.drawable.ic_v
                 tv_test_state.text = getString(R.string.connection_connected)
-                hideCircle()
             } else {
                 fab.imageResource = R.drawable.ic_v_idle
                 tv_test_state.text = getString(R.string.connection_not_connected)
             }
+            hideCircle()
         }
 
     private val adapter by lazy { MainRecyclerAdapter(this) }
