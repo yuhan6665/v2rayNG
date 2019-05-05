@@ -140,7 +140,7 @@ object Utils {
             remoteDns
                     .split(",")
                     .forEach {
-                        if (Utils.isIpAddress(it)) {
+                        if (Utils.isPureIpAddress(it)) {
                             ret.add(it)
                         }
                     }
@@ -161,7 +161,7 @@ object Utils {
             domesticDns
                     .split(",")
                     .forEach {
-                        if (Utils.isIpAddress(it)) {
+                        if (Utils.isPureIpAddress(it)) {
                             ret.add(it)
                         }
                     }
@@ -227,29 +227,30 @@ object Utils {
                 addr = addr.drop(8).replace("]", "")
             }
 
-            val regV4 = Regex("^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$")
             // addr = addr.toLowerCase()
             var octets = addr.split('.').toTypedArray()
             if (octets.size == 4) {
                 if(octets[3].indexOf(":") > 0) {
                     addr = addr.substring(0, addr.indexOf(":"))
                 }
-
-                return regV4.matches(addr)
+                return isIpv4Address(addr)
             }
 
             // Ipv6addr [2001:abc::123]:8080
-            if (addr.indexOf("[") == 0 && addr.lastIndexOf("]") > 0) {
-                addr = addr.drop(1)
-                addr = addr.dropLast(addr.count() - addr.lastIndexOf("]"))
-            }
-
-            val regV6 = Regex("^((?:[0-9A-Fa-f]{1,4}))?((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))?((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$")
-            return regV6.matches(addr)
+            return isIpv6Address(addr)
         } catch (e: Exception) {
             e.printStackTrace()
             return false
         }
+    }
+
+    fun isPureIpAddress(value: String): Boolean {
+        return (isIpv4Address(value) || isIpv6Address(value))
+    }
+
+    fun isIpv4Address(value: String): Boolean {
+        val regV4 = Regex("^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$")
+        return regV4.matches(value)
     }
 
     fun isIpv6Address(value: String): Boolean {
