@@ -30,10 +30,14 @@ import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Observable
 import rx.Subscription
 import java.net.InetAddress
+import java.io.IOException
+import java.io.File
+import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
+import android.util.Log
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -178,7 +182,7 @@ class V2RayVpnService : VpnService() {
         mInterface = builder.establish()
         //Logger.d("VPNService", "New interface: " + parameters)
         //Logger.d(Libv2ray.checkVersionX())
-
+        sendFd(mInterface.fileDescriptor)
 
         if (defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SPEED_ENABLED, false)) {
             mSubscription = Observable.interval(3, java.util.concurrent.TimeUnit.SECONDS)
@@ -198,6 +202,26 @@ class V2RayVpnService : VpnService() {
         try {
             mInterface.close()
         } catch (ignored: Exception) {
+        }
+    }
+
+    private fun sendFd(fd: FileDescriptor) {
+        var tries = 0
+        val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
+
+        Log.d("GoLog", fd.toString())
+        Log.d("GoLog", path)
+
+        while (true) try {
+            LocalSocket().use { localSocket ->
+                localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
+                localSocket.setFileDescriptorsForSend(arrayOf(fd))
+                localSocket.outputStream.write(42)
+            }
+            return
+        } catch (e: IOException) {
+            if (tries > 5) throw e
+            tries += 1
         }
     }
 
