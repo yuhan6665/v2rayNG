@@ -200,6 +200,7 @@ class V2RayVpnService : VpnService() {
         var tries = 0
         val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
         while (true) try {
+            Thread.sleep(50L shl tries)
             LocalSocket().use { localSocket ->
                 localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
                 localSocket.setFileDescriptorsForSend(arrayOf(fd))
