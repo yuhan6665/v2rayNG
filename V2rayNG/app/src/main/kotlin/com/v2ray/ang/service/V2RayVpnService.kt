@@ -36,6 +36,7 @@ import java.io.FileInputStream
 import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
+import android.util.Log
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -201,6 +202,7 @@ class V2RayVpnService : VpnService() {
         val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
         while (true) try {
             Thread.sleep(50L shl tries)
+            Log.d("com.v2ray.ang",  "sendFd: " + tries.toString())
             LocalSocket().use { localSocket ->
                 localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
                 localSocket.setFileDescriptorsForSend(arrayOf(fd))
