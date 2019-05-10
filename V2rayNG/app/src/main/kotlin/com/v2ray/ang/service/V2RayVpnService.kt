@@ -203,15 +203,16 @@ class V2RayVpnService : VpnService() {
         val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
         while (true) try {
             Thread.sleep(50L shl tries)
-            Log.d("com.v2ray.ang",  "sendFd tries: " + tries.toString())
+            Log.d(packageName, "sendFd tries: " + tries.toString())
             LocalSocket().use { localSocket ->
                 localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
                 localSocket.setFileDescriptorsForSend(arrayOf(fd))
                 localSocket.outputStream.write(42)
             }
             return
-        } catch (e: IOException) {
-            if (tries > 5) throw e
+        } catch (e: Exception) {
+            Log.d(packageName, e.toString())
+            if (tries > 5) return
             tries += 1
         }
     }
@@ -240,7 +241,7 @@ class V2RayVpnService : VpnService() {
             try {
                 v2rayPoint.runLoop()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
             }
 
             if (v2rayPoint.isRunning) {
@@ -269,7 +270,7 @@ class V2RayVpnService : VpnService() {
             try {
                 v2rayPoint.stopLoop()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
             }
         }
 
@@ -372,7 +373,7 @@ class V2RayVpnService : VpnService() {
                 this@V2RayVpnService.shutdown()
                 return 0
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
                 return -1
             }
         }
@@ -394,7 +395,7 @@ class V2RayVpnService : VpnService() {
                 this@V2RayVpnService.setup(s)
                 return 0
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
                 return -1
             }
         }
@@ -403,7 +404,7 @@ class V2RayVpnService : VpnService() {
             try {
                 this@V2RayVpnService.sendFd()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
                 return -1
             }
             return 0
