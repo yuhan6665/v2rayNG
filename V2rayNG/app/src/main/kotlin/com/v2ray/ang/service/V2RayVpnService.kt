@@ -178,7 +178,7 @@ class V2RayVpnService : VpnService() {
 
         // Create a new interface using the builder and save the parameters.
         mInterface = builder.establish()
-        sendFd(mInterface.fileDescriptor)
+        sendFd()
 
         if (defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SPEED_ENABLED, false)) {
             mSubscription = Observable.interval(3, java.util.concurrent.TimeUnit.SECONDS)
@@ -197,12 +197,13 @@ class V2RayVpnService : VpnService() {
         }
     }
 
-    private fun sendFd(fd: FileDescriptor) {
+    fun sendFd() {
+        var fd = mInterface.fileDescriptor
         var tries = 0
         val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
         while (true) try {
             Thread.sleep(50L shl tries)
-            Log.d("com.v2ray.ang",  "sendFd: " + tries.toString())
+            Log.d("com.v2ray.ang",  "sendFd tries: " + tries.toString())
             LocalSocket().use { localSocket ->
                 localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
                 localSocket.setFileDescriptorsForSend(arrayOf(fd))
@@ -396,6 +397,16 @@ class V2RayVpnService : VpnService() {
                 e.printStackTrace()
                 return -1
             }
+        }
+
+        override fun sendFd(): Long {
+            try {
+                this@V2RayVpnService.sendFd()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return -1
+            }
+            return 0
         }
     }
 
