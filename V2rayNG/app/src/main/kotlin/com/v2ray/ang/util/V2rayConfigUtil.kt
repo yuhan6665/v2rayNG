@@ -13,6 +13,7 @@ import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.ui.SettingsActivity
 import org.json.JSONException
 import org.json.JSONObject
+import org.json.JSONArray
 import com.google.gson.JsonObject
 
 object V2rayConfigUtil {
@@ -211,10 +212,14 @@ object V2rayConfigUtil {
                 }
             }
 
-            if (!Utils.isIpAddress(vmess.address)) {
-                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, String.format("%s:%s", vmess.address, vmess.port))
-//                app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, vmess.address)
+            var serverDomain: String
+            if(Utils.isIpv6Address(vmess.address)) {
+                serverDomain = String.format("[%s]:%s", vmess.address, vmess.port)
+            } else {
+                serverDomain = String.format("%s:%s", vmess.address, vmess.port)
             }
+            app.defaultDPreference.setPrefString(AppConfig.PREF_CURR_CONFIG_DOMAIN, serverDomain)
+
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -611,7 +616,7 @@ object V2rayConfigUtil {
     private fun parseDomainName(jsonConfig: String): String {
         try {
             val jObj = JSONObject(jsonConfig)
-            var domainName = ""
+            var domainName: String
             if (jObj.has("outbound")) {
                 domainName = parseDomainName(jObj.optJSONObject("outbound"))
                 if (!TextUtils.isEmpty(domainName)) {
@@ -642,17 +647,23 @@ object V2rayConfigUtil {
 
     private fun parseDomainName(outbound: JSONObject): String {
         try {
-            if (outbound.has("settings")
-                    && outbound.optJSONObject("settings").has("vnext")) {
-                val vnext = outbound.optJSONObject("settings").optJSONArray("vnext")
+            if (outbound.has("settings")) {
+                var vnext: JSONArray?
+                if (outbound.optJSONObject("settings").has("vnext")) {
+                    // vmess
+                    vnext = outbound.optJSONObject("settings").optJSONArray("vnext")
+                } else if (outbound.optJSONObject("settings").has("servers")) {
+                    // shadowsocks or socks
+                    vnext = outbound.optJSONObject("settings").optJSONArray("servers")
+                } else {
+                    return ""
+                }
                 for (i in 0..(vnext.length() - 1)) {
                     val item = vnext.getJSONObject(i)
                     val address = item.getString("address")
                     val port = item.getString("port")
                     if(Utils.isIpv6Address(address)) {
                         return String.format("[%s]:%s", address, port)
-                    } else if (!Utils.isIpAddress(address)) {
-                        return String.format("%s:%s", address, port)
                     } else {
                         return String.format("%s:%s", address, port)
                     }
