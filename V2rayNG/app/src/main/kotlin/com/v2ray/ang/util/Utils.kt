@@ -41,7 +41,10 @@ import java.net.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 import java.math.BigInteger
+import java.util.concurrent.TimeUnit
 import libv2ray.Libv2ray
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 
 object Utils {
@@ -385,47 +388,36 @@ object Utils {
         }
     }
 
-    /**
-     * Based on: https://android.googlesource.com/platform/frameworks/base/+/b19a838/services/core/java/com/android/server/connectivity/NetworkMonitor.java#1071
-     */
     fun testConnection(context: Context, port: Int): String {
-        var result: String
-        var conn: HttpURLConnection? = null
 
+        val url = "https://www.google.com/generate_204"
+        val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", port))
+        var result = ""
         try {
-            val url = URL("https",
-                    "www.google.com",
-                    "/generate_204")
-//        Log.d("testConnection", "222222222222")
-
-            conn = url.openConnection(Proxy(Proxy.Type.SOCKS,
-                    InetSocketAddress("localhost", port)))
-                    as HttpURLConnection
-//        Log.d("testConnection", "333333333333")
-
-            conn.connectTimeout = 30000
-            conn.readTimeout = 30000
-            conn.setRequestProperty("Connection", "close")
-            conn.instanceFollowRedirects = false
-            conn.useCaches = false
-//        Log.d("testConnection", "444444444444")
-
-
+            val client = OkHttpClient.Builder()
+                                .followRedirects(false)
+                                .readTimeout(30L, TimeUnit.SECONDS)
+                                .writeTimeout(30L, TimeUnit.SECONDS)
+                                .proxy(proxy)
+                                .build()
+            val request = Request.Builder()
+                                .url(url)
+                                .header("Connection", "close")
+                                .build()
             val start = SystemClock.elapsedRealtime()
-            val code = conn.responseCode
+            val response = client.newCall(request).execute();
+            val code = (response.code()).toLong()
             val elapsed = SystemClock.elapsedRealtime() - start
 
-            if (code == 204 || code == 200 && conn.responseLength == 0L) {
+            if (code == 204L || code == 200L && response?.body()?.contentLength() == 0L) {
                 result = context.getString(R.string.connection_test_available, elapsed)
-            } else {
-                throw IOException(context.getString(R.string.connection_test_error_status_code, code))
             }
         } catch (e: IOException) {
+            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
             result = context.getString(R.string.connection_test_error, e.message)
         } catch (e: Exception) {
+            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
             result = context.getString(R.string.connection_test_error, e.message)
-        } finally {
-            conn?.disconnect()
         }
 
         return result
