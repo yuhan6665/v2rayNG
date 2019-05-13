@@ -389,6 +389,45 @@ object Utils {
     }
 
     fun testConnection(context: Context, port: Int): String {
+        var result: String
+        var conn: HttpURLConnection? = null
+
+        try {
+            val url = URL("https",
+                    "www.google.com",
+                    "/generate_204")
+
+            conn = url.openConnection(Proxy(Proxy.Type.SOCKS,
+                    InetSocketAddress("localhost", port)))
+                    as HttpURLConnection
+
+            conn.connectTimeout = 30000
+            conn.readTimeout = 30000
+            conn.setRequestProperty("Connection", "close")
+            conn.instanceFollowRedirects = false
+            conn.useCaches = false
+
+            val start = SystemClock.elapsedRealtime()
+            val code = conn.responseCode
+            val elapsed = SystemClock.elapsedRealtime() - start
+
+            if (code == 204 || code == 200 && conn.responseLength == 0L) {
+                result = context.getString(R.string.connection_test_available, elapsed)
+            } else {
+                throw IOException(context.getString(R.string.connection_test_error_status_code, code))
+            }
+        } catch (e: Exception) {
+            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
+            result = testConnectionOkHttp3(context, port)
+        } finally {
+            conn?.disconnect()
+        }
+
+        return result
+    }
+
+
+    fun testConnectionOkHttp3(context: Context, port: Int): String {
 
         val url = "https://www.google.com/generate_204"
         val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", port))
