@@ -17,7 +17,6 @@ import android.support.annotation.RequiresApi
 import android.support.v4.app.NotificationCompat
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.R
-import com.v2ray.ang.dto.VpnBandwidth
 import com.v2ray.ang.extension.defaultDPreference
 import com.v2ray.ang.extension.toSpeedString
 import com.v2ray.ang.ui.MainActivity
@@ -30,10 +29,15 @@ import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Observable
 import rx.Subscription
 import java.net.InetAddress
+import java.io.IOException
+import java.io.File
+import java.io.FileDescriptor
 import java.io.FileInputStream
 import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
+import android.util.Log
+import org.jetbrains.anko.doAsync
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -58,7 +62,6 @@ class V2RayVpnService : VpnService() {
     val fd: Int get() = mInterface.fd
     private var mBuilder: NotificationCompat.Builder? = null
     private var mSubscription: Subscription? = null
-    private var lastVpnBandwidth: VpnBandwidth? = null
     private var mNotificationManager: NotificationManager? = null
 
 
@@ -176,20 +179,14 @@ class V2RayVpnService : VpnService() {
 
         // Create a new interface using the builder and save the parameters.
         mInterface = builder.establish()
-        //Logger.d("VPNService", "New interface: " + parameters)
-        //Logger.d(Libv2ray.checkVersionX())
-
+        sendFd()
 
         if (defaultDPreference.getPrefBoolean(SettingsActivity.PREF_SPEED_ENABLED, false)) {
             mSubscription = Observable.interval(3, java.util.concurrent.TimeUnit.SECONDS)
                     .subscribe {
-                        vpnBandwidth?.let {
-                            lastVpnBandwidth?.let { last ->
-                                val speed = it - last
-                                updateNotification("${(speed.txByte / 3).toSpeedString()} ↑  ${(speed.rxByte / 3).toSpeedString()} ↓")
-                            }
-                            lastVpnBandwidth = it
-                        }
+                        val uplink = v2rayPoint.queryStats("socks", "uplink")
+                        val downlink = v2rayPoint.queryStats("socks", "downlink")
+                        updateNotification("${(uplink / 3).toSpeedString()} ↑  ${(downlink / 3).toSpeedString()} ↓")
                     }
         }
     }
@@ -198,6 +195,29 @@ class V2RayVpnService : VpnService() {
         try {
             mInterface.close()
         } catch (ignored: Exception) {
+        }
+    }
+
+    fun sendFd() {
+        val fd = mInterface.fileDescriptor
+        val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
+
+        doAsync {
+            var tries = 0
+            while (true) try {
+                Thread.sleep(50L shl tries)
+                Log.d(packageName, "sendFd tries: " + tries.toString())
+                LocalSocket().use { localSocket ->
+                    localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
+                    localSocket.setFileDescriptorsForSend(arrayOf(fd))
+                    localSocket.outputStream.write(42)
+                }
+                break
+            } catch (e: Exception) {
+                Log.d(packageName, e.toString())
+                if (tries > 5) break
+                tries += 1
+            }
         }
     }
 
@@ -225,7 +245,7 @@ class V2RayVpnService : VpnService() {
             try {
                 v2rayPoint.runLoop()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
             }
 
             if (v2rayPoint.isRunning) {
@@ -254,7 +274,7 @@ class V2RayVpnService : VpnService() {
             try {
                 v2rayPoint.stopLoop()
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
             }
         }
 
@@ -351,48 +371,16 @@ class V2RayVpnService : VpnService() {
         return mNotificationManager!!
     }
 
-    private val vpnBandwidth: VpnBandwidth?
-        get() {
-            try {
-                // val netDev = FileInputStream("/proc/net/dev").bufferedReader()
-                // var bandWidth: VpnBandwidth? = null
-                // val prefix = "tun0:"
-                // while (true) {
-                //     val line = netDev.readLine().trim()
-                //     if (line.startsWith(prefix)) {
-                //         val numbers = line.substring(prefix.length).split(' ')
-                //                 .filter(String::isNotEmpty)
-                //                 .map(String::toLong)
-                //         if (numbers.size > 10)
-                //             bandWidth = VpnBandwidth(numbers[0], numbers[8])
-                //         break
-                //     }
-                // }
-                // netDev.close()
-
-                val uplink = v2rayPoint.queryStats("socks", "uplink")
-                val downlink = v2rayPoint.queryStats("socks", "downlink")
-                val bandWidth = VpnBandwidth(downlink, uplink)
-                return bandWidth
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return null
-            }
-        }
-
-
     private inner class V2RayCallback : V2RayVPNServiceSupportsSet {
         override fun shutdown(): Long {
             try {
                 this@V2RayVpnService.shutdown()
                 return 0
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
                 return -1
             }
         }
-
-        override fun getVPNFd() = this@V2RayVpnService.fd.toLong()
 
         override fun prepare(): Long {
             return 0
@@ -411,9 +399,19 @@ class V2RayVpnService : VpnService() {
                 this@V2RayVpnService.setup(s)
                 return 0
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.d(packageName, e.toString())
                 return -1
             }
+        }
+
+        override fun sendFd(): Long {
+            try {
+                this@V2RayVpnService.sendFd()
+            } catch (e: Exception) {
+                Log.d(packageName, e.toString())
+                return -1
+            }
+            return 0
         }
     }
 

@@ -39,7 +39,7 @@ class LogcatActivity : BaseActivity() {
                 lst.add("-v")
                 lst.add("time")
                 lst.add("-s")
-                lst.add("GoLog:I,tun2socks,com.v2ray.ang")
+                lst.add("GoLog,tun2socks,com.v2ray.ang")
                 val process = Runtime.getRuntime().exec(lst.toTypedArray())
 //                val bufferedReader = BufferedReader(
 //                        InputStreamReader(process.inputStream))
