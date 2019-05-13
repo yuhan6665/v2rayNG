@@ -391,7 +391,7 @@ object Utils {
     fun testConnection(context: Context, port: Int): String {
 
         val url = "https://www.google.com/generate_204"
-        val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", port))
+        val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", port))
         var result = ""
         try {
             val client = OkHttpClient.Builder()
