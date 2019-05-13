@@ -37,6 +37,7 @@ import java.lang.ref.SoftReference
 import android.os.Build
 import android.annotation.TargetApi
 import android.util.Log
+import org.jetbrains.anko.doAsync
 
 class V2RayVpnService : VpnService() {
     companion object {
@@ -198,22 +199,25 @@ class V2RayVpnService : VpnService() {
     }
 
     fun sendFd() {
-        var fd = mInterface.fileDescriptor
-        var tries = 0
+        val fd = mInterface.fileDescriptor
         val path = File(Utils.packagePath(applicationContext), "sock_path").absolutePath
-        while (true) try {
-            Thread.sleep(50L shl tries)
-            Log.d(packageName, "sendFd tries: " + tries.toString())
-            LocalSocket().use { localSocket ->
-                localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
-                localSocket.setFileDescriptorsForSend(arrayOf(fd))
-                localSocket.outputStream.write(42)
+
+        doAsync {
+            var tries = 0
+            while (true) try {
+                Thread.sleep(50L shl tries)
+                Log.d(packageName, "sendFd tries: " + tries.toString())
+                LocalSocket().use { localSocket ->
+                    localSocket.connect(LocalSocketAddress(path, LocalSocketAddress.Namespace.FILESYSTEM))
+                    localSocket.setFileDescriptorsForSend(arrayOf(fd))
+                    localSocket.outputStream.write(42)
+                }
+                break
+            } catch (e: Exception) {
+                Log.d(packageName, e.toString())
+                if (tries > 5) break
+                tries += 1
             }
-            return
-        } catch (e: Exception) {
-            Log.d(packageName, e.toString())
-            if (tries > 5) return
-            tries += 1
         }
     }
 
