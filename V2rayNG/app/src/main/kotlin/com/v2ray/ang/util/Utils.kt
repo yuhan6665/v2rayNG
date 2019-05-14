@@ -43,8 +43,6 @@ import java.util.regex.Pattern
 import java.math.BigInteger
 import java.util.concurrent.TimeUnit
 import libv2ray.Libv2ray
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
 
 object Utils {
@@ -397,10 +395,9 @@ object Utils {
                     "www.google.com",
                     "/generate_204")
 
-            conn = url.openConnection(Proxy(Proxy.Type.SOCKS,
-                    InetSocketAddress("localhost", port)))
-                    as HttpURLConnection
-
+            conn = url.openConnection(
+                Proxy(Proxy.Type.HTTP,
+                InetSocketAddress("127.0.0.1", port + 1))) as HttpURLConnection
             conn.connectTimeout = 30000
             conn.readTimeout = 30000
             conn.setRequestProperty("Connection", "close")
@@ -416,47 +413,16 @@ object Utils {
             } else {
                 throw IOException(context.getString(R.string.connection_test_error_status_code, code))
             }
+        } catch (e: IOException) {
+            // network exception
+            Log.d(AppConfig.ANG_PACKAGE,"testConnection IOException: "+Log.getStackTraceString(e))
+            result = context.getString(R.string.connection_test_error, e.message)
         } catch (e: Exception) {
-            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
-            result = testConnectionOkHttp3(context, port)
+            // library exception, eg sumsung
+            Log.d(AppConfig.ANG_PACKAGE,"testConnection Exception: "+Log.getStackTraceString(e))
+            result = context.getString(R.string.connection_test_error, e.message)
         } finally {
             conn?.disconnect()
-        }
-
-        return result
-    }
-
-
-    fun testConnectionOkHttp3(context: Context, port: Int): String {
-
-        val url = "https://www.google.com/generate_204"
-        val proxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("127.0.0.1", port))
-        var result = ""
-        try {
-            val client = OkHttpClient.Builder()
-                                .followRedirects(false)
-                                .readTimeout(30L, TimeUnit.SECONDS)
-                                .writeTimeout(30L, TimeUnit.SECONDS)
-                                .proxy(proxy)
-                                .build()
-            val request = Request.Builder()
-                                .url(url)
-                                .header("Connection", "close")
-                                .build()
-            val start = SystemClock.elapsedRealtime()
-            val response = client.newCall(request).execute();
-            val code = (response.code()).toLong()
-            val elapsed = SystemClock.elapsedRealtime() - start
-
-            if (code == 204L || code == 200L && response?.body()?.contentLength() == 0L) {
-                result = context.getString(R.string.connection_test_available, elapsed)
-            }
-        } catch (e: IOException) {
-            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
-            result = context.getString(R.string.connection_test_error, e.message)
-        } catch (e: Exception) {
-            Log.d(AppConfig.ANG_PACKAGE,Log.getStackTraceString(e))
-            result = context.getString(R.string.connection_test_error, e.message)
         }
 
         return result

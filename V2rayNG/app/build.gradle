@@ -107,7 +107,6 @@ dependencies {
     implementation 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     implementation 'com.beust:klaxon:3.0.1'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.1'
 
     implementation(name: 'libv2ray', ext: 'aar')
     //implementation(name: 'tun2socks', ext: 'aar')
