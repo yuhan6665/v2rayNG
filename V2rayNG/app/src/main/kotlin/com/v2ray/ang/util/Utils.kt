@@ -314,11 +314,14 @@ object Utils {
         context.toast(R.string.toast_services_start)
         if (AngConfigManager.genStoreV2rayConfig(-1)) {
             val configContent = AngConfigManager.currGeneratedV2rayConfig()
-            try {
-                Libv2ray.testConfig(configContent)
-            } catch (e: Exception) {
-                context.toast(e.toString())
-                return false
+            val configType = AngConfigManager.currConfigType()
+            if (configType == AppConfig.EConfigType.Custom) {
+                try {
+                    Libv2ray.testConfig(configContent)
+                } catch (e: Exception) {
+                    context.toast(e.toString())
+                    return false
+                }
             }
             V2RayVpnService.startV2Ray(context)
             return true

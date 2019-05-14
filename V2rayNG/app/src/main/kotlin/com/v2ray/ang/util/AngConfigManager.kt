@@ -206,6 +206,16 @@ object AngConfigManager {
         return app.defaultDPreference.getPrefString(AppConfig.PREF_CURR_CONFIG, "")
     }
 
+    fun currConfigType(): Int {
+        if (angConfig.index < 0
+                || angConfig.vmess.count() <= 0
+                || angConfig.index > angConfig.vmess.count() - 1
+        ) {
+            return -1
+        }
+        return angConfig.vmess[angConfig.index].configType
+    }
+
     fun currConfigName(): String {
         if (angConfig.index < 0
                 || angConfig.vmess.count() <= 0
