@@ -33,7 +33,16 @@
         "tls"
       ]
     }
-  }],
+  },
+  {
+    "tag": "http",
+    "port": 10809,
+    "protocol": "http",
+    "settings": {
+      "userLevel": 8
+    }
+  }
+],
   "outbounds": [{
     "tag": "proxy",
     "protocol": "vmess",
