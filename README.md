@@ -13,4 +13,3 @@ https://www.v2ray.com/
 ### Donate
 If you like v2rayNG and want to support the developer  
 BTC: [1K69UnL44D5psuSgwrzFQCdjnRbvd5taE3](https://blockchain.info/address/1K69UnL44D5psuSgwrzFQCdjnRbvd5taE3 "1K69UnL44D5psuSgwrzFQCdjnRbvd5taE3")  
-Paypal: [paypal.me/CaptainIronN](https://www.paypal.me/CaptainIronN/18 "paypal.me/CaptainIronN")  
